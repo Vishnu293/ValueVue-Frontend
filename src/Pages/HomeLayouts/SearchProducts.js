@@ -273,7 +273,7 @@ const SearchProducts = ({ category }) => {
                 }}
                 sx={{
                   "&:hover": {
-                    transform: "scale(1.05)",
+                    transform: "scale(1.005)",
                     transition: "transform 0.1s ease-in-out",
                   },
                 }}

@@ -34,7 +34,7 @@ const Footer = () => {
         </Grid>
       </Box>
       <Divider color="white" sx={{marginTop: "1rem"}}/>
-      <Box sx={{textAlign: "center"}}>
+      <Box sx={{textAlign: "center", marginTop:"1rem"}}>
         <img src={Logo} width="200px"/>
       </Box>
       <Box>

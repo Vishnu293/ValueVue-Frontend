@@ -82,7 +82,7 @@ const Navbar = () => {
           <div style={{ marginRight: "1rem" }}>
             <img
               src={logo}
-              width={"200px"}
+              width={"135px"}
               style={{ cursor: "pointer" }}
               onClick={() => navigate("/")}
             />
