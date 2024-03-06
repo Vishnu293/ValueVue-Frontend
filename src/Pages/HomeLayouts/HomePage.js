@@ -7,6 +7,7 @@ import SellerTable from "../SellerFiles/SellerTable.js";
 import { Box } from "@mui/material";
 import { useSelector } from "react-redux";
 import SearchProducts from "./SearchProducts.js";
+import AccessDialog from "./AccessDialog.js";
 import ProductsElectronic from "../ProductsFiles/ProductsElectronic.js";
 import ProductsGrocery from "../ProductsFiles/ProductsGrocery.js";
 import ProductsPersonal from "../ProductsFiles/ProductsPersonal.js";
@@ -43,17 +44,18 @@ const HomePage = () => {
     <Box sx={{ backgroundColor: "#f0f0f0" }}>
       <Navbar />
       <Category />
-      {currentUser ? <CategoryAlpha /> : null}
-      {currentUser ? <Box sx={{height: "3rem"}}></Box> : null}
+      {currentUser || (!currentUser && !currentSeller) ? <CategoryAlpha /> : null}
+      {currentUser || (!currentUser && !currentSeller) ? <Box sx={{height: "3rem"}}></Box> : null}
+      {!currentUser && !currentSeller ? <AccessDialog/> : null}
       {currentSeller ? <SellerTable /> : null}
-      {currentUser ? <SearchProducts /> : null}
-      {currentUser ? <Products /> : null}
-      {currentUser ? <ProductsElectronic /> : null}
-      {currentUser ? <ProductsGrocery /> : null}
-      {currentUser ? <ProductsPersonal /> : null}
-      {currentUser ? <ProductsHealth /> : null}
-      {currentUser ? <ProductsOffice /> : null}
-      {currentUser ? <ProductsOthers /> : null}
+      {currentUser || (!currentUser && !currentSeller) ? <SearchProducts /> : null}
+      {currentUser || (!currentUser && !currentSeller) ? <Products /> : null}
+      {currentUser || (!currentUser && !currentSeller) ? <ProductsElectronic /> : null}
+      {currentUser || (!currentUser && !currentSeller) ? <ProductsGrocery /> : null}
+      {currentUser || (!currentUser && !currentSeller) ? <ProductsPersonal /> : null}
+      {currentUser || (!currentUser && !currentSeller) ? <ProductsHealth /> : null}
+      {currentUser || (!currentUser && !currentSeller) ? <ProductsOffice /> : null}
+      {currentUser || (!currentUser && !currentSeller) ? <ProductsOthers /> : null}
       <Backtotop />
       <Footer />
     </Box>

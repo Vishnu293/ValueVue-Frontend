@@ -43,6 +43,7 @@ const Edit = () => {
     productPrice: "",
     productCategory: "",
     productDesc: "",
+    productStock: "",
     productImage: null,
     productFeatures: {},
     customFeatures: {},
@@ -52,6 +53,7 @@ const Edit = () => {
     productPrice: "",
     productCategory: "",
     productDesc: "",
+    productStock: "",
     productImage: null,
     productFeatures: {},
     customFeatures: {},
@@ -107,6 +109,8 @@ const Edit = () => {
         checkProductDetails.productPrice &&
       modifiedProductDetails.productCategory ===
         checkProductDetails.productCategory &&
+      modifiedProductDetails.productStock ===
+        checkProductDetails.productStock &&
       modifiedProductDetails.productDesc === checkProductDetails.productDesc &&
       modifiedProductDetails.productImage ===
         checkProductDetails.productImage &&
@@ -533,17 +537,48 @@ const Edit = () => {
               }}
               fullWidth
             />
-            <TextField
-              id="productPrice"
-              label="Product Price"
-              variant="outlined"
-              value={modifiedProductDetails.productPrice}
-              name="productPrice"
-              onChange={(e) => {
-                onChange(e);
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                gap: 2,
               }}
-              fullWidth
-            />
+            >
+              <TextField
+                id="productPrice"
+                label="Product Price"
+                variant="outlined"
+                value={modifiedProductDetails.productPrice}
+                name="productPrice"
+                onChange={(e) => {
+                  onChange(e);
+                }}
+                fullWidth
+                sx={{ flexBasis: "50%" }}
+              />
+              <FormControl
+                variant="outlined"
+                fullWidth
+                sx={{
+                  flexBasis: "50%",
+                }}
+              >
+                <InputLabel id="productStockLabel">Product Stock</InputLabel>
+                <Select
+                  labelId="productStockLabel"
+                  id="productStock"
+                  label="Stock Available"
+                  value={modifiedProductDetails.productStock}
+                  name="productStock"
+                  onChange={onChange}
+                >
+                  <MenuItem value="In Stock">In Stock</MenuItem>
+                  <MenuItem value="Low in Stock">Low in Stock</MenuItem>
+                  <MenuItem value="Out of Stock">Out of Stock</MenuItem>
+                </Select>
+              </FormControl>
+            </Box>
             <TextField
               multiline
               rows={2}
@@ -582,7 +617,9 @@ const Edit = () => {
               </Select>
             </FormControl>
             <FormControl fullWidth>
-              <FormHelperText sx={{ textAlign: "center" }}>
+              <FormHelperText
+                sx={{ textAlign: "center", marginBottom: "0.5rem" }}
+              >
                 Select an image file
               </FormHelperText>
               <Input

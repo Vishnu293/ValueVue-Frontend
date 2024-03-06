@@ -19,6 +19,7 @@ const ProductsPersonal = () => {
   const [displayAllProducts, setDisplayAllProducts] = useState(false);
   const productsPerPage = 5;
   const API = "http://localhost:8080/product/user/get";
+  const nAPI = "http://localhost:8080/product/get";
   const selectedLocation = useSelector((state) => state.location);
   const userLat = selectedLocation.lat;
   const userLng = selectedLocation.lng;
@@ -53,12 +54,31 @@ const ProductsPersonal = () => {
       });
   };
 
+  const getAllProducts = async () => {
+    setLoading(true);
+    await axios
+      .get(nAPI)
+      .then((res) => {
+        setProductsList(res.data);
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
   useEffect(() => {
     if (userLat !== null && userLng !== null) {
       getProducts();
     }
+    else {
+      getAllProducts();
+    }
   }, [userLat, userLng]);
-
+  
   if (productsList.length === 0 && !productsList) {
     return <p>No Products Available</p>;
   }

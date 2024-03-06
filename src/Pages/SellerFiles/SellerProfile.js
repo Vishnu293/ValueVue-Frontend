@@ -34,6 +34,7 @@ import {
   signOutSuccess,
   signOutFailure,
 } from "../../redux/seller/sellerSlice.js";
+import SellerQR from "./SellerQR.js";
 
 const SellerProfile = () => {
   const { currentSeller } = useSelector((state) => state.seller);
@@ -167,6 +168,7 @@ const SellerProfile = () => {
           >
             <Tab label="Personal Details" />
             <Tab label="Change Password" />
+            <Tab label="Your QR Code" />
           </Tabs>
         </div>
         <Divider orientation="vertical" variant="middle" flexItem />
@@ -490,6 +492,37 @@ const SellerProfile = () => {
               )}
             </Formik>
           </Box>
+        )}
+        {value === 2 && (
+          <div style={{ flexBasis: "80%", height: "65vh", overflowY: "auto" }}>
+            <h1
+              style={{
+                textAlign: "center",
+                margin: "15px auto",
+                fontSize: "20px",
+                paddingBottom: "0.5rem",
+              }}
+            >
+              Your QR Code
+            </h1>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 2,
+              }}
+            >
+              <Typography sx={{ textAlign: "center" }}>
+                We recommend using this QR code in your shop to provide easy
+                access to available products for customers.
+              </Typography>
+              <SellerQR
+                sellerId={currentSeller?.data?._id}
+                sellerName={currentSeller?.data?.sellerShop}
+                dataUrl={dataUrl}
+              />
+            </Box>
+          </div>
         )}
       </Card>
       <div style={{ display: "flex", justifyContent: "center" }}>

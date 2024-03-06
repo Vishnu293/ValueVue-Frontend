@@ -29,7 +29,8 @@ const SearchProducts = ({ category }) => {
   const [searchName, setSearchName] = useState("");
   const [searchCategory, setSearchCategory] = useState("");
   const [isSearchInitiated, setIsSearchInitiated] = useState(false);
-  const API = "http://localhost:8080/product/get";
+  const API = "http://localhost:8080/product/user/get";
+  const nAPI = "http://localhost:8080/product/get";
   const selectedLocation = useSelector((state) => state.location);
   const userLat = selectedLocation.lat;
   const userLng = selectedLocation.lng;
@@ -56,7 +57,13 @@ const SearchProducts = ({ category }) => {
   const getProducts = async () => {
     setLoading(true);
     await axios
-      .get(API)
+      .get(API, {
+        params: {
+          userLat: userLat,
+          userLng: userLng,
+          maxDistance: 50,
+        },
+      })
       .then((res) => {
         setProductsList(res.data);
         console.log(res);
@@ -68,6 +75,31 @@ const SearchProducts = ({ category }) => {
         setLoading(false);
       });
   };
+
+  const getAllProducts = async () => {
+    setLoading(true);
+    await axios
+      .get(nAPI)
+      .then((res) => {
+        setProductsList(res.data);
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
+  useEffect(() => {
+    if (userLat !== null && userLng !== null) {
+      getProducts();
+    }
+    else {
+      getAllProducts();
+    }
+  }, [userLat, userLng]);
 
   const getAutocompleteOptions = () => {
     if (searchName.trim() === "") {
@@ -90,12 +122,6 @@ const SearchProducts = ({ category }) => {
       .map((product) => product.productName);
     setAutocompleteOptions(options);
   };
-
-  useEffect(() => {
-    if (userLat !== null && userLng !== null) {
-      getProducts();
-    }
-  }, [userLat, userLng]);
 
   useEffect(() => {
     if (!isHomePage) {

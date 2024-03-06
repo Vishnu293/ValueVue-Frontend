@@ -33,6 +33,7 @@ const Add = () => {
     productPrice: "",
     productCategory: "",
     productDesc: "",
+    productStock: "",
     productImage: null,
     sellerId: currentSeller.data._id,
     productFeatures: {},
@@ -424,15 +425,46 @@ const Add = () => {
               onChange={onChange}
               fullWidth
             />
-            <TextField
-              id="productPrice"
-              label="Product Price"
-              variant="outlined"
-              value={productData.productPrice}
-              name="productPrice"
-              onChange={onChange}
-              fullWidth
-            />
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                gap: 2,
+              }}
+            >
+              <TextField
+                id="productPrice"
+                label="Product Price"
+                variant="outlined"
+                value={productData.productPrice}
+                name="productPrice"
+                onChange={onChange}
+                fullWidth
+                sx={{ flexBasis: "50%" }}
+              />
+              <FormControl
+                variant="outlined"
+                fullWidth
+                sx={{
+                  flexBasis: "50%",
+                }}
+              >
+                <InputLabel id="productStockLabel">Product Stock</InputLabel>
+                <Select
+                  labelId="productStockLabel"
+                  id="productStock"
+                  label="Stock Available"
+                  value={productData.productStock}
+                  name="productStock"
+                  onChange={onChange}
+                >
+                  <MenuItem value="In Stock">In Stock</MenuItem>
+                  <MenuItem value="Low in Stock">Low in Stock</MenuItem>
+                  <MenuItem value="Out of Stock">Out of Stock</MenuItem>
+                </Select>
+              </FormControl>
+            </Box>
             <TextField
               multiline
               rows={2}
@@ -473,7 +505,7 @@ const Add = () => {
               </Select>
             </FormControl>
             <FormControl fullWidth>
-              <FormHelperText sx={{ textAlign: "center" }}>
+              <FormHelperText sx={{ textAlign: "center", marginBottom: "0.5rem" }}>
                 Select an Image file
               </FormHelperText>
               <Input
