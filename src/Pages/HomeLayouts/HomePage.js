@@ -44,8 +44,8 @@ const HomePage = () => {
     <Box sx={{ backgroundColor: "#f0f0f0" }}>
       <Navbar />
       <Category />
-      {currentUser || (!currentUser && !currentSeller) ? <CategoryAlpha /> : null}
-      {currentUser || (!currentUser && !currentSeller) ? <Box sx={{height: "3rem"}}></Box> : null}
+      {currentUser ? <CategoryAlpha /> : null}
+      {currentUser ? <Box sx={{height: "3rem"}}></Box> : null}
       {!currentUser && !currentSeller ? <AccessDialog/> : null}
       {currentSeller ? <SellerTable /> : null}
       {currentUser || (!currentUser && !currentSeller) ? <SearchProducts /> : null}
