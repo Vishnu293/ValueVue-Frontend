@@ -13,7 +13,6 @@ import {
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import axios from "axios";
-import Swal from "sweetalert2";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useNavigate } from "react-router";
@@ -23,16 +22,13 @@ import {
   signInSuccess,
   signInFailure,
 } from "../../redux/seller/sellerSlice";
+import Cookies from "js-cookie";
 
 const SellerSignin = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const inputRef = useRef(null);
   const { loading, error } = useSelector((state) => state.seller);
-  // const [formData, setFormData] = useState({
-  //   sellerEmail: "",
-  //   sellerPassword: "",
-  // });
 
   const formik = useFormik({
     initialValues: {
@@ -52,29 +48,13 @@ const SellerSignin = () => {
     axios
       .post("http://localhost:8080/seller/signin", values)
       .then((response) => {
-        Swal.fire({
-          title: "Signin Successful!",
-          icon: "success",
-          confirmButtonText: "OK",
-        });
+        Cookies.set("sellerLogin", true);
         if (response.success === false) {
           dispatch(signInFailure(response.message));
           return;
         }
         dispatch(signInSuccess(response));
-        console.log(response?.data?.sellerCity);
-        console.log(response?.data);
-        console.log(response?.data?.sellerCords[0]);
-        dispatch(signInSuccess(response));
         navigate("/");
-      })
-      .catch((err) => {
-        dispatch(signInFailure(err.message));
-        Swal.fire({
-          title: "Signin Failed!",
-          icon: "error",
-          confirmButtonText: "OK",
-        });
       });
   };
 
@@ -164,6 +144,7 @@ const SellerSignin = () => {
             onClick={() => {
               signIn(formik.values);
             }}
+            disabled={formik.isSubmitting}
             sx={{ fontWeight: "600", "&:hover": { color: "gold" } }}
           >
             Sign In

@@ -345,8 +345,8 @@ const ProductDetails = ({ productsList }) => {
                   objectFit: "contain",
                 }}
                 image={`data:${
-                  selectedProduct.sellerId.sellerAvatar.mimetype
-                };base64,${selectedProduct.sellerId.sellerAvatar.buffer.toString(
+                  selectedProduct.sellerId.sellerAvatar?.mimetype
+                };base64,${selectedProduct.sellerId.sellerAvatar?.buffer.toString(
                   "base64"
                 )}`}
                 alt={selectedProduct.sellerId?.sellerAvatar}

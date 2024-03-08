@@ -35,6 +35,7 @@ import {
   signOutFailure,
 } from "../../redux/seller/sellerSlice.js";
 import SellerQR from "./SellerQR.js";
+import Cookies from 'js-cookie';
 
 const SellerProfile = () => {
   const { currentSeller } = useSelector((state) => state.seller);
@@ -68,6 +69,9 @@ const SellerProfile = () => {
           return;
         }
         dispatch(signOutSuccess(res));
+        const currentTime = new Date();
+        const expirationTime = new Date(currentTime.getTime() + 5000);
+        Cookies.remove('sellerLogin', { path: '', expires: expirationTime })
         navigate("/signin");
       })
       .catch((err) => {

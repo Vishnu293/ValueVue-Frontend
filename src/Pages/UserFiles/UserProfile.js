@@ -34,6 +34,7 @@ import {
   signOutSuccess,
   signOutFailure,
 } from "../../redux/user/userSlice.js";
+import Cookies from "js-cookie";
 
 const UserProfile = () => {
   const { currentUser } = useSelector((state) => state.user);
@@ -67,6 +68,9 @@ const UserProfile = () => {
           return;
         }
         dispatch(signOutSuccess(res));
+        const currentTime = new Date();
+        const expirationTime = new Date(currentTime.getTime() + 5000);
+        Cookies.remove("login", { path: "", expires: expirationTime });
         navigate("/signin");
       })
       .catch((err) => {

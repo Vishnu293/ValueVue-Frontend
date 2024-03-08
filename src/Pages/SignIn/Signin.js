@@ -13,7 +13,6 @@ import {
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import axios from "axios";
-import Swal from "sweetalert2";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useNavigate } from "react-router";
@@ -24,6 +23,7 @@ import {
   signInFailure,
 } from "../../redux/user/userSlice.js";
 import { selectLocation } from "../../redux/location/locationSlice.js";
+import Cookies from "js-cookie";
 
 const Signin = () => {
   const navigate = useNavigate();
@@ -44,33 +44,17 @@ const Signin = () => {
     }),
   });
 
-  // const [formData, setFormData] = useState({
-  //   userEmail: "",
-  //   userPassword: "",
-  // });
-
-  // const onChange = (e) => {
-  //   setFormData({ ...formData, [e.target.name]: e.target.value });
-  // };
-  
   const signIn = (values) => {
     dispatch(signInStart());
     axios
       .post("http://localhost:8080/user/get", values)
       .then((response) => {
-        Swal.fire({
-          title: "SignIn Successful!",
-          icon: "success",
-          confirmButtonText: "OK",
-        });
+        Cookies.set("login", true);
         if (response.success === false) {
           dispatch(signInFailure(response.message));
           return;
         }
         dispatch(signInSuccess(response));
-        console.log(response?.data?.userCity);
-        console.log(response?.data);
-        console.log(response?.data?.userCords[0]);
         const location = {
           description: response?.data?.userCity,
           lat: response?.data?.userCords.lat,
@@ -79,14 +63,6 @@ const Signin = () => {
         dispatch(selectLocation(location));
         navigate("/");
       })
-      .catch((err) => {
-        dispatch(signInFailure(err.message));
-        Swal.fire({
-          title: "SignIn Failed!",
-          icon: "error",
-          confirmButtonText: "OK",
-        });
-      });
   };
 
   useEffect(() => {
@@ -129,11 +105,7 @@ const Signin = () => {
           <TextField
             label="Password"
             placeholder="Enter Your Password"
-            type={
-              formik.values.showPassword
-                ? "text"
-                : "password"
-            }
+            type={formik.values.showPassword ? "text" : "password"}
             variant="standard"
             helperText={
               formik.touched.userPassword && formik.errors.userPassword
@@ -144,8 +116,7 @@ const Signin = () => {
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             error={
-              formik.touched.userPassword &&
-              Boolean(formik.errors.userPassword)
+              formik.touched.userPassword && Boolean(formik.errors.userPassword)
             }
             InputProps={{
               endAdornment: (
@@ -154,8 +125,7 @@ const Signin = () => {
                     onClick={() =>
                       formik.setValues({
                         ...formik.values,
-                        showPassword:
-                          !formik.values.showPassword,
+                        showPassword: !formik.values.showPassword,
                       })
                     }
                     edge="end"
@@ -178,6 +148,7 @@ const Signin = () => {
             onClick={() => {
               signIn(formik.values);
             }}
+            disabled={formik.isSubmitting}
             sx={{ fontWeight: "600", "&:hover": { color: "gold" } }}
           >
             Sign In
