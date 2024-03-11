@@ -48,12 +48,12 @@ const SellerSignin = () => {
     axios
       .post("http://localhost:8080/seller/signin", values)
       .then((response) => {
-        Cookies.set("sellerLogin", true);
         if (response.success === false) {
           dispatch(signInFailure(response.message));
           return;
         }
         dispatch(signInSuccess(response));
+        Cookies.set("sellerLogin", true, { expires: 7 });
         navigate("/");
       });
   };

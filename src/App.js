@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import MainSignup from "./Pages/SignUp/MainSignup.js";
@@ -16,6 +16,7 @@ import SellerLocation from "./Pages/SellerFiles/SellerLocation.js";
 import SellerDetails from "./Pages/SellerFiles/SellerDetails.js";
 import Contact from "./Pages/HomeLayouts/Contact.js";
 import About from "./Pages/HomeLayouts/About.js";
+import Loading from "./Pages/Loading.js";
 import ProductsCategoryPage from "./Pages/ProductCategories/ProductsCategoryPage.js";
 import PageNotFound from "./Pages/PageNotFound/PageNotFound.js";
 import Cookies from "js-cookie";
@@ -25,8 +26,20 @@ import InvalidPage from "./Pages/PageNotFound/InvalidPage.js";
 const App = () => {
   const { currentUser } = useSelector((state) => state.user);
   const { currentSeller } = useSelector((state) => state.seller);
-  let login = Cookies.get("login");
-  let sellerLogin = Cookies.get("sellerLogin");
+  const [loading, setLoading] = useState(true);
+  const login = Cookies.get("login");
+  const sellerLogin = Cookies.get("sellerLogin");
+
+  useEffect(() => {
+    const delay = setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+    return () => clearTimeout(delay);
+  }, []);
+
+  if (loading) {
+    return <Loading />;
+  }
 
   return (
     <BrowserRouter>

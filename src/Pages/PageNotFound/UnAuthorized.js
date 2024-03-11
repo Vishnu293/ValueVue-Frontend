@@ -1,12 +1,26 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Box, Button, Typography } from "@mui/material";
+import Loading from "../Loading";
 
 const UnAuthorized = () => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const delay = setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+    return () => clearTimeout(delay);
+  }, []);
+
   const handleNavigateSignin = () => {
     navigate("/signin");
   };
+
+  if (loading) {
+    return <Loading />;
+  }
 
   return (
     <Box

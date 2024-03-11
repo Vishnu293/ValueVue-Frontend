@@ -58,12 +58,12 @@ const Navbar = () => {
   let imageData;
   let dataUrl;
   if (currentUser) {
-    imageData = currentUser.data.userAvatar;
+    imageData = currentUser?.data?.userAvatar;
     dataUrl = `data:${
       currentUser?.data?.userAvatar?.mimetype
     };base64,${imageData?.buffer?.toString("base64")}`;
   } else if (currentSeller) {
-    imageData = currentSeller.data.sellerAvatar;
+    imageData = currentSeller?.data?.sellerAvatar;
     dataUrl = `data:${
       currentSeller?.data?.sellerAvatar?.mimetype
     };base64,${imageData?.buffer?.toString("base64")}`;

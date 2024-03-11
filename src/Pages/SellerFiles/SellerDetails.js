@@ -50,12 +50,6 @@ const SellerDetails = () => {
   const [loading, setLoading] = useState(true);
   const { currentUser } = useSelector((state) => state.user);
   const [activeTab, setActiveTab] = useState(0);
-  const images = [
-    "https://images.pexels.com/photos/135620/pexels-photo-135620.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-    "https://images.pexels.com/photos/264636/pexels-photo-264636.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-    "https://images.pexels.com/photos/2079438/pexels-photo-2079438.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-    "https://images.pexels.com/photos/2159074/pexels-photo-2159074.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-  ];
   const [open, setOpen] = React.useState(true);
 
   const handleClick = () => {

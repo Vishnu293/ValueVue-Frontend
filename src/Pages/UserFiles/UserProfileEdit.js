@@ -56,9 +56,9 @@ const UserProfileEdit = () => {
   const [resetFlag, setResetFlag] = useState(true);
   const { currentUser } = useSelector((state) => state.user);
   const navigate = useNavigate();
-  const imageData = currentUser?.data.userAvatar.buffer;
+  const imageData = currentUser?.data?.userAvatar?.buffer;
   const initialDataUrl = `data:${
-    currentUser.data.userAvatar.mimetype
+    currentUser?.data?.userAvatar?.mimetype
   };base64,${imageData?.toString("base64")}`;
   const [userDetails, setUserDetails] = useState({
     ...currentUser.data,

@@ -49,7 +49,6 @@ const Signin = () => {
     axios
       .post("http://localhost:8080/user/get", values)
       .then((response) => {
-        Cookies.set("login", true);
         if (response.success === false) {
           dispatch(signInFailure(response.message));
           return;
@@ -61,6 +60,7 @@ const Signin = () => {
           lng: response?.data?.userCords.lng,
         };
         dispatch(selectLocation(location));
+        Cookies.set("login", true, { expires: 7 });
         navigate("/");
       })
   };

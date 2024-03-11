@@ -4,7 +4,7 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import Navbar from "../HeaderFiles/Navbar";
 import Category from "../HomeLayouts/Category";
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Loading from "../Loading";
@@ -23,25 +23,29 @@ const SellerLocation = () => {
   const [dlng, setDlng] = useState(0);
   const [dlat, setDlat] = useState(0);
   const [loading, setLoading] = useState(true);
-  
+
   const getSingleSeller = async () => {
     try {
       const singleSellerUrl = `http://localhost:8080/seller/get/${sellerid}`;
       const response = await axios.get(singleSellerUrl);
       setSelectedSeller(response.data);
 
-    if (Array.isArray(response?.data?.sellerCords)) {
-      setDlat(response?.data?.sellerCords[0]);
-      setDlng(response?.data?.sellerCords[1]);
-    } else if (response?.data?.sellerCords && response?.data?.sellerCords.lat && response?.data?.sellerCords.lng) {
-      setDlat(response?.data?.sellerCords.lat);
-      setDlng(response?.data?.sellerCords.lng);
-    } else {
-      console.error("Invalid coordinates format for seller:", response.data);
-    }
+      if (Array.isArray(response?.data?.sellerCords)) {
+        setDlat(response?.data?.sellerCords[0]);
+        setDlng(response?.data?.sellerCords[1]);
+      } else if (
+        response?.data?.sellerCords &&
+        response?.data?.sellerCords.lat &&
+        response?.data?.sellerCords.lng
+      ) {
+        setDlat(response?.data?.sellerCords.lat);
+        setDlng(response?.data?.sellerCords.lng);
+      } else {
+        console.error("Invalid coordinates format for seller:", response.data);
+      }
       console.log(response);
-      console.log(lat)
-      console.log(lng)
+      console.log(lat);
+      console.log(lng);
     } catch (error) {
       console.error("Error fetching single product:", error);
       throw error;
@@ -57,26 +61,26 @@ const SellerLocation = () => {
   const directionsRenderer = new window.google.maps.DirectionsRenderer();
 
   const fetchData = async () => {
-    console.log("current location", typeof(lat), lng, description)
+    console.log("current location", typeof lat, lng, description);
     try {
       await axios.get(
-        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${GOOGLE_MAPS_API_KEY}`
+        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyC-7H1dWirXia_4m4I2drN1ID9SVFIE3Sk`
       );
-      if (typeof lat === 'number' && typeof lng === 'number') {
-      showMap(lng, lat);
-      setLoading(false)
-    } else {
-      console.error("Invalid latitude or longitude values");
-      setLoading(false)
-    }
-  } catch (error) {
+      if (typeof lat === "number" && typeof lng === "number") {
+        showMap(lng, lat);
+        setLoading(false);
+      } else {
+        console.error("Invalid latitude or longitude values");
+        setLoading(false);
+      }
+    } catch (error) {
       console.error("Error fetching location data:", error);
-      setLoading(false)
+      setLoading(false);
     }
   };
 
   useEffect(() => {
-    if(selectedSeller !== ""){
+    if (selectedSeller !== "") {
       fetchData();
     }
   }, [selectedSeller]);
@@ -133,8 +137,19 @@ const SellerLocation = () => {
     <Box>
       <Navbar />
       <Category />
-      <Icon style={{ cursor: 'pointer', padding: '1.5rem', marginLeft: '1rem',  marginBottom: '0.5rem',color: "black"}} onClick={() => navigate(-1)}><ArrowBackIcon/></Icon>
-      {loading && <Loading/>}
+      <Icon
+        style={{
+          cursor: "pointer",
+          padding: "1.5rem",
+          marginLeft: "1rem",
+          marginBottom: "0.5rem",
+          color: "black",
+        }}
+        onClick={() => navigate(-1)}
+      >
+        <ArrowBackIcon />
+      </Icon>
+      {loading && <Loading />}
       <Card
         id="map"
         sx={{
@@ -142,8 +157,7 @@ const SellerLocation = () => {
           height: "80vh",
           width: "90vw",
         }}
-      >
-      </Card>
+      ></Card>
     </Box>
   );
 };
