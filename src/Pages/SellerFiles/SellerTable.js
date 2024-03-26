@@ -246,7 +246,7 @@ const SellerTable = ({}) => {
     <ThemeProvider theme={getMuiTheme()}>
       <Box>
         <Card
-          sx={{ backgroundColor: "white", padding: "20px", margin: "15px" }}
+          sx={{ backgroundColor: "white", padding: "20px", margin: "15px", marginTop: "1.2rem" }}
         >
           <div style={{ display: "flex", justifyContent: "space-between" }}>
             <h1 style={{ fontSize: "25px" }}>Your Products:</h1>

@@ -41,7 +41,7 @@ const Drawerbar = () => {
             </ListItemButton>
         </List>
       </Drawer>
-      <IconButton sx={{color: 'white', /* marginRight: '3rem' */}} onClick={()=> setOpenDrawer(!openDrawer)}>
+      <IconButton sx={{color: 'gold', /* marginRight: '3rem' */}} onClick={()=> setOpenDrawer(!openDrawer)}>
         <MenuIcon/>
       </IconButton>
     </div>

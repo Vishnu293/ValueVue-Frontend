@@ -5,7 +5,7 @@ const Category = () => {
   return (
     <div>
       <Card>
-        <div style={{height: '5rem', }}></div>
+        <div style={{height: '5rem'}}></div>
       </Card>
     </div>
   )

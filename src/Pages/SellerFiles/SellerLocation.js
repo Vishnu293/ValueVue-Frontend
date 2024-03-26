@@ -8,6 +8,8 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Loading from "../Loading";
+import Source from "../../Assets/source.png";
+import Destination from "../../Assets/destination.png";
 
 const GOOGLE_MAPS_API_KEY = "AIzaSyC-7H1dWirXia_4m4I2drN1ID9SVFIE3Sk";
 //AIzaSyC-7H1dWirXia_4m4I2drN1ID9SVFIE3Sk
@@ -91,39 +93,100 @@ const SellerLocation = () => {
         zoom: 15,
         mapTypeId: window.google.maps.MapTypeId.ROADMAP,
       });
+      const customMarkerIcon1 = {
+        url: Source,
+        scaledSize: new window.google.maps.Size(40, 40),
+      };
+      const customMarkerIcon2 = {
+        url: Destination,
+        scaledSize: new window.google.maps.Size(40, 40),
+      };
       const sourceMarker = new window.google.maps.Marker({
         position: { lat, lng },
         map: map,
-        label: "Source",
+        icon: customMarkerIcon1,
+        label: {
+          text: "You",
+          color: "black",
+          fontWeight: "bold",
+          fontSize: "14px",
+          anchor: new window.google.maps.Point(0, -20),
+        },
       });
       const destinationMarker = new window.google.maps.Marker({
         position: { lat: dlat, lng: dlng },
         map: map,
-        label: "Destination",
+        icon: customMarkerIcon2,
+        label: {
+          text: selectedSeller.sellerShop,
+          color: "black",
+          fontWeight: "bold",
+          fontSize: "14px",
+          anchor: new window.google.maps.Point(0, -20),
+        },
       });
 
       const bounds = new window.google.maps.LatLngBounds();
       bounds.extend(sourceMarker.getPosition());
       bounds.extend(destinationMarker.getPosition());
 
-      map.fitBounds(bounds);
-
-      const maxZoom = 15;
-      const zoom = map.getZoom();
-      if (zoom > maxZoom) {
-        map.setZoom(maxZoom);
-      }
-
       const request = {
         origin: { lat, lng },
         destination: { lat: dlat, lng: dlng },
         travelMode: window.google.maps.TravelMode.DRIVING,
+        provideRouteAlternatives: true,
       };
 
       directionsService.route(request, (result, status) => {
         if (status === window.google.maps.DirectionsStatus.OK) {
-          directionsRenderer.setMap(map);
-          directionsRenderer.setDirections(result);
+          result.routes.forEach((route, index) => {
+            const routePath = new window.google.maps.Polyline({
+              path: route.overview_path,
+              geodesic: true,
+              strokeOpacity: 1.0,
+              strokeWeight: 3,
+            });
+            routePath.setMap(map);
+
+            const midPointIndex = Math.floor(route.overview_path.length / 2);
+            const midPoint = route.overview_path[midPointIndex];
+
+            const distanceService =
+              new window.google.maps.DistanceMatrixService();
+            const origin = new window.google.maps.LatLng(lat, lng);
+            const destination = new window.google.maps.LatLng(dlat, dlng);
+            distanceService.getDistanceMatrix(
+              {
+                origins: [origin],
+                destinations: [destination],
+                travelMode: window.google.maps.TravelMode.DRIVING,
+              },
+              (response, status) => {
+                if (status === "OK") {
+                  const distance = response.rows[0].elements[0].distance.text;
+                  const duration = response.rows[0].elements[0].duration.text;
+
+                  const infowindow = new window.google.maps.InfoWindow({
+                    content: `<b><div>Route ${
+                      index + 1
+                    }</div><div>Time: ${duration}</div><div>Distance: ${distance}</div></b>`,
+                  });
+                  infowindow.setPosition(midPoint);
+                  infowindow.open(map);
+                } else {
+                  console.error("Error getting distance and duration:", status);
+                }
+              }
+            );
+          });
+
+          map.fitBounds(bounds);
+
+          const maxZoom = 15;
+          const zoom = map.getZoom();
+          if (zoom > maxZoom) {
+            map.setZoom(maxZoom);
+          }
         } else {
           console.error("Error getting directions:", status);
         }
@@ -138,11 +201,11 @@ const SellerLocation = () => {
       <Navbar />
       <Category />
       <Icon
-        style={{
+        sx={{
           cursor: "pointer",
-          padding: "1.5rem",
-          marginLeft: "1rem",
+          marginLeft: "1.5rem",
           marginBottom: "0.5rem",
+          marginTop: "1rem",
           color: "black",
         }}
         onClick={() => navigate(-1)}
@@ -155,7 +218,7 @@ const SellerLocation = () => {
         sx={{
           margin: "0 auto",
           height: "80vh",
-          width: "90vw",
+          width: "93vw",
         }}
       ></Card>
     </Box>

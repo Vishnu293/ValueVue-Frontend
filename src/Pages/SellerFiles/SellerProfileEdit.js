@@ -12,6 +12,8 @@ import {
   Icon,
   Typography,
 } from "@mui/material";
+import { ThemeProvider } from "@mui/material/styles";
+import { lightTheme, darkTheme } from "../MyTheme";
 import React, { useEffect, useState, useRef } from "react";
 import PhotoCameraIcon from "@mui/icons-material/PhotoCamera";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -259,6 +261,10 @@ const SellerProfileEdit = () => {
     });
   };
 
+  useEffect(() => {
+    convertAddressToLatLng();
+  }, []);
+
   const convertAddressToLatLng = async () => {
     const fullAddress = `${sellerDetails.sellerDoor}, ${sellerDetails.sellerStreet}, ${sellerDetails.sellerCity}, ${sellerDetails.sellerState}, ${sellerDetails.sellerDistrict}, ${sellerDetails.sellerCountry}`;
     try {
@@ -278,7 +284,10 @@ const SellerProfileEdit = () => {
             lng: location.lng,
           },
         }));
+        console.log(sellerDetails);
+        console.log("locationsssss", location);
       }
+      console.log("ccccc", sellerDetails);
     } catch (error) {
       console.error("Error converting address to coordinates:", error);
     }
@@ -286,10 +295,7 @@ const SellerProfileEdit = () => {
 
   const Save = async () => {
     try {
-      await convertAddressToLatLng();
       console.log("Seller Shop Value:", sellerDetails?.sellerShopImages);
-
-      // Step 1: Log sellerDetailsObj
 
       const sellerDetailsObj = {
         sellerName: sellerDetails.sellerName,
@@ -327,13 +333,11 @@ const SellerProfileEdit = () => {
 
       dispatch(signInStart());
 
-      // Step 2: Log FormData before sending the request
       const formDataObject = {};
       for (const [key, value] of detailsFormData.entries()) {
         formDataObject[key] = value;
       }
 
-      // Log the object
       console.log("FormData:", formDataObject);
 
       const res = await axios.post(
@@ -367,7 +371,6 @@ const SellerProfileEdit = () => {
           confirmButtonText: "OK",
         });
       } else {
-        // Handle other error cases
         Swal.fire({
           title: "Update Failed!",
           text:
@@ -457,372 +460,414 @@ const SellerProfileEdit = () => {
   }, []);
 
   return (
-    <Box>
-      <Navbar />
-      <Category />
-      <Icon
-        style={{
-          cursor: "pointer",
-          padding: "1.5rem",
-          marginLeft: "1rem",
-          marginBottom: "0.5rem",
-          color: "black",
-        }}
-        onClick={() => navigate("/sellerprofile")}
-      >
-        <ArrowBackIcon />
-      </Icon>
-      <Card
-        sx={{
-          padding: "20px",
-          margin: "15px",
-          marginTop: "0",
-          height: "70vh",
-          width: "90vw",
-          margin: "1.8rem auto",
-          gap: 2,
-          display: "flex",
-          justifyContent: "space-between",
-        }}
-      >
-        <div
+    <ThemeProvider theme={lightTheme}>
+      <Box>
+        <Navbar />
+        <Category />
+        <Icon
           style={{
-            flexBasis: "20%",
+            cursor: "pointer",
+            marginLeft: "1.5rem",
+            marginBottom: "0.5rem",
+            marginTop: "1rem",
+            color: "black",
+            fontSize: "1.5rem",
+          }}
+          onClick={() => navigate("/sellerprofile")}
+        >
+          <ArrowBackIcon sx={{ fontSize: "22.5px" }} />
+        </Icon>
+        <Box
+          sx={{
+            height: "80vh",
+            width: "93vw",
+            margin: "0 auto",
             display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            position: "relative",
-            marginTop: "3.1vh",
+            gap: 2,
           }}
         >
-          <label htmlFor="sellerAvatar">
-            <input
-              type="file"
-              accept="image/*"
-              className="sellerAvatar"
-              id="sellerAvatar"
-              onChange={handleFileChange}
-              ref={inputRef}
-              hidden
-            />
-            <Avatar
-              alt="Seller Profile"
-              src={sellerDetails.dataUrl}
-              sx={{
-                margin: "27% auto",
-                width: "100px",
-                height: "100px",
-                cursor: "pointer",
-                position: "relative",
-                overflow: "hidden",
-              }}
-            />
-          </label>
-          <Avatar
-            style={{
-              position: "absolute",
-              top: 27,
-              backgroundColor: "rgba(0, 0, 0, 0.3)",
-              textAlign: "center",
-              width: "100px",
-              height: "100px",
-            }}
-          >
-            <IconButton size="small" onClick={handleImageClick} sx={{}}>
-              <PhotoCameraIcon sx={{ color: "white" }} />
-            </IconButton>
-          </Avatar>
-          <p>{currentSeller.data.sellerName}</p>
-        </div>
-        <Divider orientation="vertical" variant="middle" flexItem />
-        <div style={{ flexBasis: "80%", height: "72vh" }}>
-          <h1
-            style={{
-              textAlign: "center",
-              margin: "15px auto",
-              fontSize: "20px",
-              paddingBottom: "0.5rem",
-            }}
-          >
-            Personal Details
-          </h1>
           <Box
             sx={{
               display: "flex",
+              flexDirection: "column",
+              flexBasis: "20%",
               gap: 2,
             }}
           >
-            <Box
+            <Card
               sx={{
-                width: "50%",
+                backgroundColor: "white",
+                flexBasis: "30%",
+                display: "flex",
+                flexDirection: "column",
               }}
             >
-              <List
-                sx={{
-                  marginRight: "10px",
-                  marginBottom: "10px",
+              <Box
+                style={{
+                  margin: "1rem",
+                  marginBottom: "0",
+                  flexBasis: "80%",
                   display: "flex",
-                  flexDirection: "column",
-                  gap: "0.5rem",
+                  flexDirection: "row",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  gap: 2,
                 }}
               >
-                <ListItem>
-                  <ListItemText primary="Shop name:" />
-                  <ListItemText sx={{ textAlign: "end" }}>
-                    <TextField
-                      value={sellerDetails.sellerShop}
-                      name="sellerShop"
-                      error={!!errors.sellerShop}
-                      helperText={errors.sellerShop}
-                      onChange={(e) => {
-                        onChange(e);
-                      }}
-                      sx={{ "& input": { padding: "5px 10px" } }}
+                <label htmlFor="sellerAvatar">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="sellerAvatar"
+                    id="sellerAvatar"
+                    onChange={handleFileChange}
+                    ref={inputRef}
+                    hidden
+                  />
+                  <Avatar
+                    alt="Seller Profile"
+                    src={sellerDetails.dataUrl}
+                    sx={{
+                      margin: "1rem",
+                      width: "100px",
+                      height: "100px",
+                      flexBasis: "40%",
+                    }}
+                  />
+                </label>
+                <Avatar
+                  style={{
+                    position: "absolute",
+                    backgroundColor: "rgba(0, 0, 0, 0.3)",
+                    left: 69,
+                    textAlign: "center",
+                    width: "100px",
+                    height: "100px",
+                    margin: "1rem",
+                  }}
+                >
+                  <IconButton size="small" onClick={handleImageClick} sx={{}}>
+                    <PhotoCameraIcon
+                      sx={{ color: "white", fontSize: "20px" }}
                     />
-                  </ListItemText>
-                </ListItem>
-                <ListItem>
-                  <ListItemText primary="Owner name:" />
-                  <ListItemText sx={{ textAlign: "end" }}>
-                    <TextField
-                      value={sellerDetails.sellerName}
-                      name="sellerName"
-                      error={!!errors.sellerName}
-                      helperText={errors.sellerName}
-                      onChange={(e) => {
-                        onChange(e);
-                      }}
-                      sx={{ "& input": { padding: "5px 10px" } }}
-                    />
-                  </ListItemText>
-                </ListItem>
-                <ListItem>
-                  <ListItemText primary="Email" />
-                  <ListItemText sx={{ textAlign: "end" }}>
-                    <TextField
-                      value={sellerDetails.sellerEmail}
-                      name="sellerEmail"
-                      onChange={(e) => {
-                        onChange(e);
-                      }}
-                      error={!!errors.sellerEmail}
-                      helperText={errors.sellerEmail}
-                      sx={{ "& input": { padding: "5px 10px" } }}
-                    />
-                  </ListItemText>
-                </ListItem>
-                <ListItem>
-                  <ListItemText primary="Mobile" />
-                  <ListItemText sx={{ textAlign: "end" }}>
-                    <TextField
-                      value={sellerDetails.sellerMobile}
-                      name="sellerMobile"
-                      error={!!errors.sellerMobile}
-                      helperText={errors.sellerMobile}
-                      onChange={(e) => {
-                        onChange(e);
-                      }}
-                      sx={{ "& input": { padding: "5px 10px" } }}
-                    />
-                  </ListItemText>
-                </ListItem>
+                  </IconButton>
+                </Avatar>
                 <Box
                   sx={{
                     display: "flex",
-                    margin: "1rem 0.5rem 0 0.5rem",
-                    gap: 1,
+                    flexDirection: "column",
+                    flexBasis: "60%",
                   }}
                 >
-                  <Button
-                    onClick={getCurrentLocation}
-                    variant="contained"
+                  <Typography sx={{ fontSize: "12px" }}>Hello,</Typography>
+                  <Typography
                     sx={{
-                      display: "flex",
-                      justifyContent: "center",
-                      flexBasis: "30%",
-                      margin: "0.5rem auto",
+                      fontSize: "18px",
+                      fontWeight: (theme) => theme.typography.fontWeightBold,
                     }}
                   >
-                    <MyLocationIcon />
-                  </Button>
-                  <Typography
-                    variant="body2"
-                    color="textSecondary"
-                    sx={{ textAlign: "center", flexBasis: "70%" }}
-                  >
-                    We recommend double clicking the button for accurate
-                    location, OR you can enter the details manually.
+                    {currentSeller.data.sellerName}
                   </Typography>
                 </Box>
-              </List>
-            </Box>
-            <Divider
-              orientation="vertical"
-              variant="middle"
-              flexItem
-              sx={{ height: "50vh" }}
-            />
-            <Box
-              sx={{
-                width: "50%",
-              }}
-            >
-              <List
+              </Box>
+            </Card>
+            <Card sx={{ flexBasis: "70%" }}></Card>
+          </Box>
+          <Card sx={{ flexBasis: "80%", padding: "1rem" }}>
+            <Box style={{ flexBasis: "80%", height: "72vh" }}>
+              <Typography
                 sx={{
-                  marginRight: "10px",
-                  marginBottom: "10px",
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "0.5rem",
+                  textAlign: "center",
+                  margin: "15px auto",
+                  fontSize: "1.5rem",
+                  fontWeight: (theme) => theme.typography.fontWeightBold,
                 }}
               >
-                <ListItem>
-                  <ListItemText primary="Door" />
-                  <ListItemText sx={{ textAlign: "end" }}>
-                    <TextField
-                      value={sellerDetails.sellerDoor}
-                      name="sellerDoor"
-                      error={!!errors.sellerDoor}
-                      helperText={errors.sellerDoor}
-                      onChange={(e) => {
-                        onChange(e);
-                      }}
+                Personal Details
+              </Typography>
+              <Box
+                sx={{
+                  display: "flex",
+                }}
+              >
+                <Box
+                  sx={{
+                    width: "50%",
+                  }}
+                >
+                  <List
+                    sx={{
+                      marginRight: "10px",
+                      marginBottom: "10px",
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "0.5rem",
+                    }}
+                  >
+                    <ListItem>
+                      <ListItemText primary="Shop name:" />
+                      <ListItemText sx={{ textAlign: "end" }}>
+                        <TextField
+                          value={sellerDetails.sellerShop}
+                          name="sellerShop"
+                          error={!!errors.sellerShop}
+                          helperText={errors.sellerShop}
+                          onChange={(e) => {
+                            onChange(e);
+                          }}
+                          sx={{ "& input": { padding: "5px 10px" } }}
+                        />
+                      </ListItemText>
+                    </ListItem>
+                    <ListItem>
+                      <ListItemText primary="Owner name:" />
+                      <ListItemText sx={{ textAlign: "end" }}>
+                        <TextField
+                          value={sellerDetails.sellerName}
+                          name="sellerName"
+                          error={!!errors.sellerName}
+                          helperText={errors.sellerName}
+                          onChange={(e) => {
+                            onChange(e);
+                          }}
+                          sx={{ "& input": { padding: "5px 10px" } }}
+                        />
+                      </ListItemText>
+                    </ListItem>
+                    <ListItem>
+                      <ListItemText primary="Email" />
+                      <ListItemText sx={{ textAlign: "end" }}>
+                        <TextField
+                          value={sellerDetails.sellerEmail}
+                          name="sellerEmail"
+                          onChange={(e) => {
+                            onChange(e);
+                          }}
+                          error={!!errors.sellerEmail}
+                          helperText={errors.sellerEmail}
+                          sx={{ "& input": { padding: "5px 10px" } }}
+                        />
+                      </ListItemText>
+                    </ListItem>
+                    <ListItem>
+                      <ListItemText primary="Mobile" />
+                      <ListItemText sx={{ textAlign: "end" }}>
+                        <TextField
+                          value={sellerDetails.sellerMobile}
+                          name="sellerMobile"
+                          error={!!errors.sellerMobile}
+                          helperText={errors.sellerMobile}
+                          onChange={(e) => {
+                            onChange(e);
+                          }}
+                          sx={{ "& input": { padding: "5px 10px" } }}
+                        />
+                      </ListItemText>
+                    </ListItem>
+                    <Box
                       sx={{
-                        "& input": { padding: "5px 10px" },
+                        display: "flex",
+                        margin: "1rem 0.5rem 0 0.5rem",
+                        gap: 1,
                       }}
-                    />
-                  </ListItemText>
-                </ListItem>
-                <ListItem>
-                  <ListItemText primary="Street" />
-                  <ListItemText sx={{ textAlign: "end" }}>
-                    <TextField
-                      value={sellerDetails.sellerStreet}
-                      name="sellerStreet"
-                      error={!!errors.sellerStreet}
-                      helperText={errors.sellerStreet}
-                      onChange={(e) => {
-                        onChange(e);
-                      }}
-                      sx={{
-                        "& input": { padding: "5px 10px" },
-                      }}
-                    />
-                  </ListItemText>
-                </ListItem>
-                <ListItem>
-                  <ListItemText primary="City / Town / Village" />
-                  <ListItemText sx={{ textAlign: "end" }}>
-                    <TextField
-                      value={sellerDetails.sellerCity}
-                      name="sellerCity"
-                      id="sellerCity"
-                      error={!!errors.sellerCity}
-                      helperText={errors.sellerCity}
-                      onChange={(e) => {
-                        onChange(e);
-                      }}
-                      sx={{ "& input": { padding: "5px 10px" } }}
-                    />
-                  </ListItemText>
-                </ListItem>
-                <ListItem>
-                  <ListItemText primary="District" />
-                  <ListItemText sx={{ textAlign: "end" }}>
-                    <TextField
-                      value={sellerDetails.sellerDistrict}
-                      name="sellerDistrict"
-                      error={!!errors.sellerDistrict}
-                      helperText={errors.sellerDistrict}
-                      onChange={(e) => {
-                        onChange(e);
-                      }}
-                      sx={{ "& input": { padding: "5px 10px" } }}
-                    />
-                  </ListItemText>
-                </ListItem>
-                <ListItem>
-                  <ListItemText primary="State" />
-                  <ListItemText sx={{ textAlign: "end" }}>
-                    <TextField
-                      value={sellerDetails.sellerState}
-                      name="sellerState"
-                      error={!!errors.sellerState}
-                      helperText={errors.sellerState}
-                      onChange={(e) => {
-                        onChange(e);
-                      }}
-                      sx={{ "& input": { padding: "5px 10px" } }}
-                    />
-                  </ListItemText>
-                </ListItem>
-                <Box sx={{ display: "flex", width: "100%" }}>
-                  <ListItem sx={{ display: "flex", width: "50%" }}>
-                    <ListItemText primary="Country" sx={{ width: "40%" }} />
-                    <ListItemText sx={{ textAlign: "end", width: "60%" }}>
-                      <TextField
-                        value={sellerDetails.sellerCountry}
-                        name="sellerCountry"
-                        error={!!errors.sellerCountry}
-                        helperText={errors.sellerCountry}
-                        onChange={(e) => {
-                          onChange(e);
+                    >
+                      <Button
+                        onClick={getCurrentLocation}
+                        variant="contained"
+                        sx={{
+                          display: "flex",
+                          justifyContent: "center",
+                          flexBasis: "30%",
+                          margin: "0.5rem auto",
                         }}
-                        sx={{ "& input": { padding: "5px 10px" } }}
-                      />
-                    </ListItemText>
-                  </ListItem>
-                  <ListItem sx={{ display: "flex", width: "50%" }}>
-                    <ListItemText primary="Zip Code" sx={{ width: "50%" }} />
-                    <ListItemText sx={{ textAlign: "end", width: "50%" }}>
-                      <TextField
-                        value={sellerDetails.sellerZipCode}
-                        name="sellerZipCode"
-                        error={!!errors.sellerZipCode}
-                        helperText={errors.sellerZipCode}
-                        onChange={(e) => {
-                          onChange(e);
-                        }}
-                        sx={{ "& input": { padding: "5px 10px" } }}
-                      />
-                    </ListItemText>
-                  </ListItem>
+                      >
+                        <MyLocationIcon sx={{ fontSize: "20px" }} />
+                      </Button>
+                      <Typography
+                        variant="body2"
+                        color="textSecondary"
+                        sx={{ textAlign: "center", flexBasis: "70%" }}
+                      >
+                        We recommend double clicking the button for{" "}
+                        <b>ACCURATE LOCATION</b>, OR you can enter the details
+                        manually.
+                      </Typography>
+                    </Box>
+                  </List>
                 </Box>
-              </List>
+                <Divider
+                  orientation="vertical"
+                  variant="middle"
+                  flexItem
+                  sx={{ height: "50vh" }}
+                />
+                <Box
+                  sx={{
+                    width: "50%",
+                  }}
+                >
+                  <List
+                    sx={{
+                      marginRight: "10px",
+                      marginBottom: "10px",
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "0.5rem",
+                    }}
+                  >
+                    <ListItem>
+                      <ListItemText primary="Door" />
+                      <ListItemText sx={{ textAlign: "end" }}>
+                        <TextField
+                          value={sellerDetails.sellerDoor}
+                          name="sellerDoor"
+                          error={!!errors.sellerDoor}
+                          helperText={errors.sellerDoor}
+                          onChange={(e) => {
+                            onChange(e);
+                          }}
+                          sx={{
+                            "& input": { padding: "5px 10px" },
+                          }}
+                        />
+                      </ListItemText>
+                    </ListItem>
+                    <ListItem>
+                      <ListItemText primary="Street" />
+                      <ListItemText sx={{ textAlign: "end" }}>
+                        <TextField
+                          value={sellerDetails.sellerStreet}
+                          name="sellerStreet"
+                          error={!!errors.sellerStreet}
+                          helperText={errors.sellerStreet}
+                          onChange={(e) => {
+                            onChange(e);
+                          }}
+                          sx={{
+                            "& input": { padding: "5px 10px" },
+                          }}
+                        />
+                      </ListItemText>
+                    </ListItem>
+                    <ListItem>
+                      <ListItemText primary="City / Town / Village" />
+                      <ListItemText sx={{ textAlign: "end" }}>
+                        <TextField
+                          value={sellerDetails.sellerCity}
+                          name="sellerCity"
+                          id="sellerCity"
+                          error={!!errors.sellerCity}
+                          helperText={errors.sellerCity}
+                          onChange={(e) => {
+                            onChange(e);
+                          }}
+                          sx={{ "& input": { padding: "5px 10px" } }}
+                        />
+                      </ListItemText>
+                    </ListItem>
+                    <ListItem>
+                      <ListItemText primary="District" />
+                      <ListItemText sx={{ textAlign: "end" }}>
+                        <TextField
+                          value={sellerDetails.sellerDistrict}
+                          name="sellerDistrict"
+                          error={!!errors.sellerDistrict}
+                          helperText={errors.sellerDistrict}
+                          onChange={(e) => {
+                            onChange(e);
+                          }}
+                          sx={{ "& input": { padding: "5px 10px" } }}
+                        />
+                      </ListItemText>
+                    </ListItem>
+                    <ListItem>
+                      <ListItemText primary="State" />
+                      <ListItemText sx={{ textAlign: "end" }}>
+                        <TextField
+                          value={sellerDetails.sellerState}
+                          name="sellerState"
+                          error={!!errors.sellerState}
+                          helperText={errors.sellerState}
+                          onChange={(e) => {
+                            onChange(e);
+                          }}
+                          sx={{ "& input": { padding: "5px 10px" } }}
+                        />
+                      </ListItemText>
+                    </ListItem>
+                    <Box sx={{ display: "flex", width: "100%" }}>
+                      <ListItem sx={{ display: "flex", width: "50%" }}>
+                        <ListItemText primary="Country" sx={{ width: "40%" }} />
+                        <ListItemText sx={{ textAlign: "end", width: "60%" }}>
+                          <TextField
+                            value={sellerDetails.sellerCountry}
+                            name="sellerCountry"
+                            error={!!errors.sellerCountry}
+                            helperText={errors.sellerCountry}
+                            onChange={(e) => {
+                              onChange(e);
+                            }}
+                            sx={{ "& input": { padding: "5px 10px" } }}
+                          />
+                        </ListItemText>
+                      </ListItem>
+                      <ListItem sx={{ display: "flex", width: "50%" }}>
+                        <ListItemText
+                          primary="Zip Code"
+                          sx={{ width: "50%" }}
+                        />
+                        <ListItemText sx={{ textAlign: "end", width: "50%" }}>
+                          <TextField
+                            value={sellerDetails.sellerZipCode}
+                            name="sellerZipCode"
+                            error={!!errors.sellerZipCode}
+                            helperText={errors.sellerZipCode}
+                            onChange={(e) => {
+                              onChange(e);
+                            }}
+                            sx={{ "& input": { padding: "5px 10px" } }}
+                          />
+                        </ListItemText>
+                      </ListItem>
+                    </Box>
+                  </List>
+                </Box>
+              </Box>
+              <Box
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  gap: 15,
+                  marginTop: "2rem",
+                }}
+              >
+                <Button
+                  disabled={!resetFlag}
+                  variant="contained"
+                  onClick={() => {
+                    Reset();
+                  }}
+                  color="error"
+                  sx={{ fontWeight: "600", "&:hover": { color: "gold" } }}
+                >
+                  Reset
+                </Button>
+                <Button
+                  disabled={!saveFlag}
+                  variant="contained"
+                  onClick={() => {
+                    Save();
+                  }}
+                  sx={{ fontWeight: "600", "&:hover": { color: "gold" } }}
+                >
+                  Save
+                </Button>
+              </Box>
             </Box>
-          </Box>
-        </div>
-      </Card>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          gap: 15,
-        }}
-      >
-        <Button
-          disabled={!resetFlag}
-          variant="contained"
-          onClick={() => {
-            Reset();
-          }}
-          color="error"
-          sx={{ fontWeight: "600", "&:hover": { color: "gold" } }}
-        >
-          Reset
-        </Button>
-        <Button
-          disabled={!saveFlag}
-          variant="contained"
-          onClick={() => {
-            Save();
-          }}
-          sx={{ fontWeight: "600", "&:hover": { color: "gold" } }}
-        >
-          Save
-        </Button>
-      </div>
-    </Box>
+          </Card>
+        </Box>
+      </Box>
+    </ThemeProvider>
   );
 };
 

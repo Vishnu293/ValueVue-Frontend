@@ -211,9 +211,9 @@ const ProductDetails = ({ productsList }) => {
           margin: "15px",
           height: "80vh",
           maxHeight: "fit-content",
-          width: "90vw",
+          width: "93vw",
           margin: "0 auto",
-          gap: 1,
+          gap: 2,
         }}
       >
         <Card

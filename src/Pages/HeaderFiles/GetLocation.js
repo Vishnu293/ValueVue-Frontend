@@ -4,6 +4,8 @@ import React, { useEffect, useState } from "react";
 import MyLocationIcon from "@mui/icons-material/MyLocation";
 import { useDispatch } from "react-redux";
 import { selectLocation } from "../../redux/location/locationSlice";
+import { ThemeProvider } from "@mui/material/styles";
+import { lightTheme, darkTheme } from "../MyTheme";
 
 const GetLocation = () => {
   const dispatch = useDispatch();
@@ -47,6 +49,7 @@ const GetLocation = () => {
                     lat: latitude,
                     lng: longitude,
                   };
+                  console.log(newLocation)
                   setLocation(newLocation);
                   dispatch(selectLocation(newLocation));
                 }
@@ -70,37 +73,42 @@ const GetLocation = () => {
 
   useEffect(() => {
     console.log("Location changed:", location);
-  }, [location])
+  }, [location]);
 
   return (
-    <Box sx={{ display: "flex" }}>
-      <GoogleAutoComplete
-        location={location}
-        onChangeLocation={
-          handleChangeLocation
-        }
-      />
-      <Button
-        variant="contained"
-        onClick={handleGeolocationClick}
-        sx={{
-          border: 0,
-          margin: 0,
-          padding: 0,
-          width: "3.5vw",
-          minWidth: "3vw",
-          boxShadow: "none",
-          "&:hover": {
+    <Box sx={{ display: "flex", alignItems: "center", position: "relative" }}>
+      <ThemeProvider theme={lightTheme}>
+        <GoogleAutoComplete
+          location={location}
+          onChangeLocation={handleChangeLocation}
+        />
+        <Button
+          variant="contained"
+          onClick={handleGeolocationClick}
+          sx={{
+            border: 0,
+            margin: 0,
+            position: "absolute",
+            right: -70,
+            padding: "0.7rem",
+            width: "3.5vw",
+            minWidth: "3vw",
             boxShadow: "none",
-            backgroundColor: "gold",
-          },
-          color: "#1976d2",
-          borderRadius: "10px",
-          backgroundColor: "gold",
-        }}
-      >
-        <MyLocationIcon />
-      </Button>
+            "&:hover": {
+              boxShadow: "none",
+            },
+            borderRadius: "20px",
+            backgroundColor: (theme) => theme.palette.primary.dark,
+          }}
+        >
+          <MyLocationIcon
+            sx={{
+              color: (theme) => theme.palette.secondary.main,
+              fontSize: "20px",
+            }}
+          />
+        </Button>
+      </ThemeProvider>
     </Box>
   );
 };

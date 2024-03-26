@@ -17,9 +17,7 @@ import ProductsOthers from "../ProductsFiles/ProductsOthers.js";
 import { useDispatch } from "react-redux";
 import { useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
-import {
-  selectLocation
-} from "../../redux/location/locationSlice.js";
+import { selectLocation } from "../../redux/location/locationSlice.js";
 import CategoryAlpha from "./CategoryAlpha.js";
 
 const HomePage = () => {
@@ -30,8 +28,16 @@ const HomePage = () => {
   const selectedUser = useSelector((state) => state.user);
   const newLocation = {
     description: selectedUser?.currentUser?.data?.userCity,
-    lat: selectedUser?.currentUser?.data?.userCords.lat,
-    lng: selectedUser?.currentUser?.data?.userCords.lng,
+    lat:
+      selectedUser?.currentUser?.data?.userCords.lat !== null &&
+      selectedUser?.currentUser?.data?.userCords.lat !== undefined
+        ? selectedUser?.currentUser?.data?.userCords.lat
+        : selectedUser?.currentUser?.data?.userCords[0],
+    lng:
+      selectedUser?.currentUser?.data?.userCords.lng !== null &&
+      selectedUser?.currentUser?.data?.userCords.lng !== undefined
+        ? selectedUser?.currentUser?.data?.userCords.lng
+        : selectedUser?.currentUser?.data?.userCords[1],
   };
 
   useEffect(() => {
@@ -45,17 +51,31 @@ const HomePage = () => {
       <Navbar />
       <Category />
       {currentUser ? <CategoryAlpha /> : null}
-      {currentUser ? <Box sx={{height: "3rem"}}></Box> : null}
-      {!currentUser && !currentSeller ? <AccessDialog/> : null}
+      {currentUser ? <Box sx={{ height: "3rem" }}></Box> : null}
+      {!currentUser && !currentSeller ? <AccessDialog /> : null}
       {currentSeller ? <SellerTable /> : null}
-      {currentUser || (!currentUser && !currentSeller) ? <SearchProducts /> : null}
+      {currentUser || (!currentUser && !currentSeller) ? (
+        <SearchProducts />
+      ) : null}
       {currentUser || (!currentUser && !currentSeller) ? <Products /> : null}
-      {currentUser || (!currentUser && !currentSeller) ? <ProductsElectronic /> : null}
-      {currentUser || (!currentUser && !currentSeller) ? <ProductsGrocery /> : null}
-      {currentUser || (!currentUser && !currentSeller) ? <ProductsPersonal /> : null}
-      {currentUser || (!currentUser && !currentSeller) ? <ProductsHealth /> : null}
-      {currentUser || (!currentUser && !currentSeller) ? <ProductsOffice /> : null}
-      {currentUser || (!currentUser && !currentSeller) ? <ProductsOthers /> : null}
+      {currentUser || (!currentUser && !currentSeller) ? (
+        <ProductsElectronic />
+      ) : null}
+      {currentUser || (!currentUser && !currentSeller) ? (
+        <ProductsGrocery />
+      ) : null}
+      {currentUser || (!currentUser && !currentSeller) ? (
+        <ProductsPersonal />
+      ) : null}
+      {currentUser || (!currentUser && !currentSeller) ? (
+        <ProductsHealth />
+      ) : null}
+      {currentUser || (!currentUser && !currentSeller) ? (
+        <ProductsOffice />
+      ) : null}
+      {currentUser || (!currentUser && !currentSeller) ? (
+        <ProductsOthers />
+      ) : null}
       <Backtotop />
       <Footer />
     </Box>

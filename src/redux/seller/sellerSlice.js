@@ -56,7 +56,7 @@ export const checkAuthentication = () => (dispatch, getState) => {
   const { isAuthenticated } = getState().seller;
   const loginCookie = Cookies.get("sellerLogin");
 
-  if (!loginCookie && isAuthenticated) {
+  if (!loginCookie || !isAuthenticated) {
     dispatch(signOutStart());
     dispatch(signOutSuccess());
   }

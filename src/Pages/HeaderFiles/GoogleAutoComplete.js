@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React, { useEffect } from "react";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
@@ -9,7 +9,13 @@ import parse from "autosuggest-highlight/parse";
 import { debounce } from "@mui/material/utils";
 import { useDispatch, useSelector } from "react-redux";
 import { selectLocation } from "../../redux/location/locationSlice";
-import { signInStart, signInSuccess, signInFailure } from "../../redux/user/userSlice";
+import {
+  signInStart,
+  signInSuccess,
+  signInFailure,
+} from "../../redux/user/userSlice";
+import { ThemeProvider } from "@mui/material/styles";
+import { lightTheme, darkTheme } from "../MyTheme";
 
 const GOOGLE_MAPS_API_KEY = "AIzaSyC-7H1dWirXia_4m4I2drN1ID9SVFIE3Sk";
 //AIzaSyC-7H1dWirXia_4m4I2drN1ID9SVFIE3Sk
@@ -49,7 +55,7 @@ export default function GoogleAutoComplete({ location, onChangeLocation }) {
       loadScript(
         `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places`,
         document.querySelector("head"),
-        'google-maps',
+        "google-maps"
       );
     }
     loaded.current = true;
@@ -64,16 +70,27 @@ export default function GoogleAutoComplete({ location, onChangeLocation }) {
   );
 
   const handleSelect = async (selectedValue) => {
-    if (selectedValue && typeof selectedValue === "object" && selectedValue.description) {
+    if (
+      selectedValue &&
+      typeof selectedValue === "object" &&
+      selectedValue.description
+    ) {
       const geocoder = new window.google.maps.Geocoder();
-      geocoder.geocode({ address: selectedValue.description }, (results, status) => {
-        if (status === "OK" && results && results.length > 0) {
-          const { lat, lng } = results[0].geometry.location;
-          onChangeLocation({ description: selectedValue.description, lat: lat(), lng: lng() });
-        } else {
-          console.error("Error converting address to coordinates:", status);
+      geocoder.geocode(
+        { address: selectedValue.description },
+        (results, status) => {
+          if (status === "OK" && results && results.length > 0) {
+            const { lat, lng } = results[0].geometry.location;
+            onChangeLocation({
+              description: selectedValue.description,
+              lat: lat(),
+              lng: lng(),
+            });
+          } else {
+            console.error("Error converting address to coordinates:", status);
+          }
         }
-      });
+      );
     } else {
       onChangeLocation(selectedValue);
     }
@@ -119,7 +136,7 @@ export default function GoogleAutoComplete({ location, onChangeLocation }) {
   }, [value, inputValue, fetch]);
 
   React.useEffect(() => {
-    setValue(location); 
+    setValue(location);
   }, [location]);
 
   React.useEffect(() => {
@@ -141,101 +158,106 @@ export default function GoogleAutoComplete({ location, onChangeLocation }) {
   }, [dispatch]);
 
   return (
-    <Autocomplete
-      id="google-map-demo"
-      sx={{ width: 400 }}
-      disableUnderline
-      getOptionLabel={(option) =>
-        typeof option === "string" ? option : option.description
-      }
-      filterOptions={(x) => x}
-      options={options}
-      autoComplete
-      includeInputInList
-      filterSelectedOptions
-      value={value}
-      noOptionsText="No locations"
-      onChange={(event, newValue) => {
-        setOptions(newValue ? [newValue, ...options] : options);
-        setValue(newValue);
-        dispatch(selectLocation(newValue));
-        handleSelect(newValue);
-        onChangeLocation(newValue);
-      }}
-      onInputChange={(event, newInputValue) => {
-        setInputValue(newInputValue);
-        if (newInputValue === "") {
-          onChangeLocation(null);
+    <ThemeProvider theme={lightTheme}>
+      <Autocomplete
+        id="google-map-demo"
+        sx={{ width: 400 }}
+        disableUnderline
+        getOptionLabel={(option) =>
+          typeof option === "string" ? option : option.description
         }
-      }}
-
-      renderInput={(params) => (
-        <TextField
-          {...params}
-          label="Add a location"
-          disableUnderline
-          variant="filled"
-          fullWidth
-          /* InputProps={{
-            disableUnderline: true,
-          }} */
-          sx={{
-            "& input": {
-              height: 14,
-            },
-            "& .MuiFormLabel-root": {
-              fontWeight: "600",
-              color: "gold",
-            },
-            "& .MuiFilledInput-root": {
+        filterOptions={(x) => x}
+        options={options}
+        autoComplete
+        includeInputInList
+        filterSelectedOptions
+        value={value}
+        noOptionsText="No locations"
+        onChange={(event, newValue) => {
+          setOptions(newValue ? [newValue, ...options] : options);
+          setValue(newValue);
+          dispatch(selectLocation(newValue));
+          handleSelect(newValue);
+          onChangeLocation(newValue);
+        }}
+        onInputChange={(event, newInputValue) => {
+          setInputValue(newInputValue);
+          if (newInputValue === "") {
+            onChangeLocation(null);
+          }
+        }}
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            label="Add a Location"
+            variant="outlined"
+            fullWidth
+            InputLabelProps={{
+              style: {
+                color: "gold",
+                fontWeight: "600",
+                fontSize: "13px",
+              },
+            }}
+            sx={{
+              "& input": {
+                color: "white",
+                fontSize: "13px",
+                height: 14,
+              },
+              "& .MuiOutlinedInput-root": {
+                "& fieldset": {
+                  borderColor: "transparent",
+                  borderRadius: "10px",
+                },
+                "&:hover fieldset": {
+                  borderColor: "transparent",
+                },
+              },
+              backgroundColor: (theme) => theme.palette.primary.dark,
               borderRadius: "10px",
-              fontWeight: "600",
-            },
-            width: "100%",
-            marginLeft: "50px",
-            "& .MuiInputLabel-root": {
-              color: "gold",
-              shrink: false,
-            },
-          }}
-        />
-      )}
-      renderOption={(props, option) => {
-        const matches =
-          option.structured_formatting?.main_text_matched_substrings || [];
+              width: "100%",
+              marginLeft: "5rem",
+            }}
+          />
+        )}
+        renderOption={(props, option) => {
+          const matches =
+            option.structured_formatting?.main_text_matched_substrings || [];
 
-        const parts = parse(
-          option.structured_formatting?.main_text,
-          matches.map((match) => [match.offset, match.offset + match.length])
-        );
+          const parts = parse(
+            option.structured_formatting?.main_text,
+            matches.map((match) => [match.offset, match.offset + match.length])
+          );
 
-        return (
-          <li key={option.uniqueIdentifier} {...props}>
-            <Grid container alignItems="center">
-              <Grid item sx={{ display: "flex", width: 44 }}>
-                <LocationOnIcon sx={{ color: "text.secondary" }} />
+          return (
+            <li key={option.uniqueIdentifier} {...props}>
+              <Grid container alignItems="center">
+                <Grid item sx={{ display: "flex", width: 44 }}>
+                  <LocationOnIcon sx={{ color: "text.secondary" }} />
+                </Grid>
+                <Grid
+                  item
+                  sx={{ width: "calc(100% - 44px)", wordWrap: "break-word" }}
+                >
+                  {parts.map((part, index) => (
+                    <Box
+                      key={index}
+                      component="span"
+                      sx={{ fontWeight: part.highlight ? "bold" : "regular" }}
+                    >
+                      {part.text}
+                    </Box>
+                  ))}
+                  <Typography variant="body2" color="text.secondary">
+                    {option.structured_formatting?.secondary_text || ""}
+                  </Typography>
+                </Grid>
               </Grid>
-              <Grid
-                item
-                sx={{ width: "calc(100% - 44px)", wordWrap: "break-word" }}
-              >
-                {parts.map((part, index) => (
-                  <Box
-                    key={index}
-                    component="span"
-                    sx={{ fontWeight: part.highlight ? "bold" : "regular" }}
-                  >
-                    {part.text}
-                  </Box>
-                ))}
-                <Typography variant="body2" color="text.secondary">
-                  {option.structured_formatting?.secondary_text || ""}
-                </Typography>
-              </Grid>
-            </Grid>
-          </li>
-        );
-      }}
-    />
+            </li>
+          );
+        }}
+      />
+    </ThemeProvider>
   );
 }

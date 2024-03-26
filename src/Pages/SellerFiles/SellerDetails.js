@@ -160,11 +160,11 @@ const SellerDetails = () => {
       <Navbar />
       <Category />
       <Icon
-        style={{
+        sx={{
           cursor: "pointer",
-          padding: "1.5rem",
-          marginLeft: "1rem",
+          marginLeft: "1.5rem",
           marginBottom: "0.5rem",
+          marginTop: "1rem",
           color: "black",
         }}
         onClick={() => navigate(-1)}
@@ -178,7 +178,7 @@ const SellerDetails = () => {
           backgroundColor: "white",
           padding: "20px",
           height: "80vh",
-          width: "90vw",
+          width: "93vw",
           margin: "0 auto",
           gap: 2,
         }}
@@ -444,87 +444,107 @@ const SellerDetails = () => {
                     }}
                   >
                     {selectedCategoryProducts.map((product, index) => (
-                      <Card
+                      <Box
                         key={product._id}
                         onClick={() => {
                           openProductDetails(product);
                         }}
                         sx={{
-                          maxWidth: "25%",
-                          margin: "1px 0",
-                          flex: "1 0 auto",
-                          cursor: "pointer",
+                          margin: "-0.5rem",
                           "&:hover": {
-                            transform: "scale(1.005)",
-                            transition: "transform 0.1s ease-in-out",
+                            boxShadow: "0px 0px 30px rgba(0, 0, 0, 0.1)",
+                            transition: "boxShadow 0.1s ease-in-out",
                           },
                         }}
                       >
-                        <CardMedia
+                        <Box
                           sx={{
-                            width: "100%",
-                            backgroundSize: "contain",
-                            marginTop: "7.5px",
-                            padding: "0px",
-                          }}
-                          component="img"
-                          image={
-                            product.productImage?.buffer
-                              ? `data:${
-                                  product.productImage.mimetype
-                                };base64,${product.productImage.buffer.toString(
-                                  "base64"
-                                )}`
-                              : ""
-                          }
-                          title={product.productName}
-                        />
-                        <CardContent
-                          sx={{
-                            padding: "0 20px",
-                            paddingTop: "10px",
-                            "&.MuiCardContent-root:last-child": {
-                              paddingBottom: "10px",
-                              minHeight: "calc(50% - 1rem)",
-                            },
+                            width: "200px",
+                            height: "fit-content",
+                            maxHeight: "325px",
+                            cursor: "pointer",
+                            margin: "1rem",
                           }}
                         >
-                          <Typography
-                            variant="h5"
-                            component="div"
+                          <CardMedia
                             sx={{
-                              textTransform: "none",
-                              fontSize: "100%",
-                              textAlign: "center",
+                              height: "200px",
+                              backgroundSize: "contain",
+                              marginTop: "7.5px",
+                              padding: "0px",
+                            }}
+                            component="img"
+                            image={
+                              product.productImage?.buffer
+                                ? `data:${
+                                    product.productImage.mimetype
+                                  };base64,${product.productImage.buffer.toString(
+                                    "base64"
+                                  )}`
+                                : ""
+                            }
+                            title={product.productName}
+                          />
+                          <CardContent
+                            sx={{
+                              padding: "0 20px",
+                              paddingTop: "10px",
+                              "&.MuiCardContent-root:last-child": {
+                                paddingBottom: "10px",
+                                minHeight: "calc(50% - 1rem)",
+                              },
                             }}
                           >
-                            {product.productName}
-                          </Typography>
-                          <Typography
-                            gutterBottom
-                            variant="body2"
-                            color="text.secondary"
-                            sx={{
-                              textAlign: "center",
-                              textTransform: "none",
-                              fontSize: "100%",
-                            }}
-                          >
-                            {product.productCategory}
-                          </Typography>
-                          <Typography
-                            variant="h6"
-                            component="div"
-                            sx={{
-                              textAlign: "center",
-                              textTransform: "none",
-                              fontSize: "100%",
-                            }}
-                          >
-                            Rs. {product.productPrice}/-
-                          </Typography>
-                        </CardContent>
-                      </Card>
+                            <Typography
+                              component="div"
+                              fontSize="16px"
+                              sx={{
+                                textAlign: "left",
+                                textTransform: "none",
+                                display: "-webkit-box",
+                                WebkitBoxOrient: "vertical",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                WebkitLineClamp: 2,
+                                lineClamp: 2,
+                              }}
+                            >
+                              {product.productName}
+                            </Typography>
+                            <Typography
+                              gutterBottom
+                              variant="body2"
+                              color="text.secondary"
+                              sx={{
+                                textAlign: "left",
+                                textTransform: "none",
+                                margin: "0.2rem 0",
+                                display: "-webkit-box",
+                                WebkitBoxOrient: "vertical",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                WebkitLineClamp: 2,
+                                lineClamp: 2,
+                              }}
+                            >
+                              {product.productCategory}
+                            </Typography>
+                            <Typography
+                              variant="h6"
+                              component="div"
+                              sx={{
+                                textAlign: "left",
+                                textTransform: "none",
+                                marginTop: "0.5rem",
+                              }}
+                            >
+                              <b style={{ fontSize: "16px" }}>
+                                ₹ {product.productPrice}/-
+                              </b>
+                            </Typography>
+                          </CardContent>
+                        </Box>
+                      </Box>
                     ))}
                   </Box>
                 </Box>
