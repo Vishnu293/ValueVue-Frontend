@@ -134,7 +134,6 @@ const SellerLocation = () => {
         origin: { lat, lng },
         destination: { lat: dlat, lng: dlng },
         travelMode: window.google.maps.TravelMode.DRIVING,
-        provideRouteAlternatives: true,
       };
 
       directionsService.route(request, (result, status) => {
@@ -167,9 +166,7 @@ const SellerLocation = () => {
                   const duration = response.rows[0].elements[0].duration.text;
 
                   const infowindow = new window.google.maps.InfoWindow({
-                    content: `<b><div>Route ${
-                      index + 1
-                    }</div><div>Time: ${duration}</div><div>Distance: ${distance}</div></b>`,
+                    content: `<b>Shortest Route<div>Time: ${duration}</div><div>Distance: ${distance}</div></b>`,
                   });
                   infowindow.setPosition(midPoint);
                   infowindow.open(map);
