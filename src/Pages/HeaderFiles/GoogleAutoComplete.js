@@ -9,17 +9,10 @@ import parse from "autosuggest-highlight/parse";
 import { debounce } from "@mui/material/utils";
 import { useDispatch, useSelector } from "react-redux";
 import { selectLocation } from "../../redux/location/locationSlice";
-import {
-  signInStart,
-  signInSuccess,
-  signInFailure,
-} from "../../redux/user/userSlice";
 import { ThemeProvider } from "@mui/material/styles";
 import { lightTheme, darkTheme } from "../MyTheme";
 
-const GOOGLE_MAPS_API_KEY = "AIzaSyC-7H1dWirXia_4m4I2drN1ID9SVFIE3Sk";
-//AIzaSyC-7H1dWirXia_4m4I2drN1ID9SVFIE3Sk
-//AIzaSyCNAFWcEGz59qyWo9-UU2VhDVriQJdpDlM
+const MAPS_KEY = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
 
 function loadScript(src, position, id) {
   if (!position) {
@@ -43,7 +36,6 @@ export default function GoogleAutoComplete({ location, onChangeLocation }) {
   const dispatch = useDispatch();
   const selectedLocation = useSelector((state) => state.location);
   const selectedUser = useSelector((state) => state.user);
-  //console.log("uuuuuuuuuuuuuu",selectedUser?.currentUser?.data?.userCords[0])
   const newLocation = {
     description: selectedUser?.currentUser?.data?.userCity,
     lat: selectedUser?.currentUser?.data?.userCords[0],
@@ -53,7 +45,7 @@ export default function GoogleAutoComplete({ location, onChangeLocation }) {
   if (typeof window !== "undefined" && !loaded.current) {
     if (!document.querySelector("#google-maps")) {
       loadScript(
-        `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places`,
+        `https://maps.googleapis.com/maps/api/js?key=${MAPS_KEY}&libraries=places`,
         document.querySelector("head"),
         "google-maps"
       );

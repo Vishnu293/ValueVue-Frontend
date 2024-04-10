@@ -85,4 +85,5 @@ const Backtotop = () => {
 
   return <ScrollToTop smooth={isSmoothScrollSupported} />;
 };
+
 export default Backtotop;

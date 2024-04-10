@@ -5,17 +5,14 @@ import {
   CardContent,
   Typography,
   CardMedia,
-  Divider,
   Icon,
   Tab,
   Tabs,
   Paper,
   List,
-  ListItem,
   ListSubheader,
   ListItemButton,
   ListItemText,
-  ListItemIcon,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import React, { useEffect, useState } from "react";
@@ -23,18 +20,13 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import Navbar from "../HeaderFiles/Navbar";
 import Category from "../HomeLayouts/Category";
-import ImageSlider from "../ImageSlider";
 import Collapse from "@mui/material/Collapse";
-import InboxIcon from "@mui/icons-material/MoveToInbox";
-import DraftsIcon from "@mui/icons-material/Drafts";
-import SendIcon from "@mui/icons-material/Send";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import PersonIcon from "@mui/icons-material/Person";
 import CallIcon from "@mui/icons-material/Call";
 import EmailIcon from "@mui/icons-material/Email";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
-import StarBorder from "@mui/icons-material/StarBorder";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Loading from "../Loading";
@@ -203,8 +195,12 @@ const SellerDetails = () => {
                   marginRight: "1rem",
                   flex: "10%",
                 }}
-                image={selectedSeller?.sellerAvatar}
-                alt={selectedSeller?.sellerName}
+                image={`data:${
+                  selectedSeller?.sellerAvatar?.mimetype
+                };base64,${selectedSeller?.sellerAvatar?.buffer?.toString(
+                  "base64"
+                )}`}
+                alt={selectedSeller?.sellerShop}
               />
               <Box
                 sx={{
@@ -212,7 +208,7 @@ const SellerDetails = () => {
                 }}
               >
                 <Typography sx={{ fontSize: "200%" }}>
-                  {selectedSeller.sellerName}
+                  {selectedSeller.sellerShop}
                 </Typography>
                 <Typography sx={{ fontSize: "100%" }}>
                   {`${selectedSeller?.sellerDoor}, ${selectedSeller?.sellerStreet}, ${selectedSeller?.sellerCity}, `}
@@ -278,20 +274,6 @@ const SellerDetails = () => {
                 },
               }}
             >
-              {/* <Tab
-                label="Home"
-                sx={{
-                  color: "black",
-                  fontWeight: "600",
-                  width: "15%",
-                  "&.Mui-selected": {
-                    color: "white",
-                  },
-                  backgroundColor:
-                    activeTab === 0 ? "darkgoldenrod" : "transparent",
-                }}
-                onClick={() => setActiveTab(0)}
-              /> */}
               <Tab
                 label="Our Products"
                 sx={{
@@ -335,37 +317,6 @@ const SellerDetails = () => {
                 onClick={() => setActiveTab(2)}
               />
             </Tabs>
-            {/* {activeTab === 0 && (
-              <Box>
-                <Box
-                  sx={{
-                    padding: "1rem 0",
-                  }}
-                >
-                  <ImageSlider images={images} />
-                </Box>
-                <Box>
-                  <Typography
-                    sx={{
-                      textAlign: "center",
-                      margin: "1.5rem 0 0.5rem 0",
-                      fontSize: "100%",
-                      fontWeight: "600",
-                    }}
-                  >
-                    {" "}
-                    ABOUT US{" "}
-                  </Typography>
-                  <Typography>
-                    To adjust the position of the custom arrows in the
-                    ImageSlider component, you can set the position of the
-                    arrows relative to the slider itself. Here's how you can
-                    modify the position of the arrows to appear on the sides of
-                    the slider
-                  </Typography>
-                </Box>
-              </Box>
-            )} */}
             {activeTab === 0 && (
               <Box
                 sx={{
@@ -569,11 +520,8 @@ const SellerDetails = () => {
                   </Typography>
                   <Typography>
                     {" "}
-                    To adjust the position of the custom arrows in the
-                    ImageSlider component, you can set the position of the
-                    arrows relative to the slider itself. Here's how you can
-                    modify the position of the arrows to appear on the sides of
-                    the slider
+                    Welcome to our {selectedSeller?.sellerShop} details page.
+                    Contact us for more info...
                   </Typography>
                 </Box>
               </>

@@ -49,7 +49,6 @@ const GetLocation = () => {
                     lat: latitude,
                     lng: longitude,
                   };
-                  console.log(newLocation)
                   setLocation(newLocation);
                   dispatch(selectLocation(newLocation));
                 }

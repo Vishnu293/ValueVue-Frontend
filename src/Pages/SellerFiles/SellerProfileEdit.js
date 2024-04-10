@@ -31,7 +31,7 @@ import {
   signInFailure,
 } from "../../redux/seller/sellerSlice.js";
 
-const YOUR_API_KEY = "AIzaSyC-7H1dWirXia_4m4I2drN1ID9SVFIE3Sk";
+const MAPS_KEY = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
 
 function loadScript(src, position, id) {
   return new Promise((resolve, reject) => {
@@ -116,7 +116,7 @@ const SellerProfileEdit = () => {
           const { latitude, longitude } = position.coords;
           axios
             .get(
-              `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${YOUR_API_KEY}`
+              `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${MAPS_KEY}`
             )
             .then((response) => {
               const results = response.data.results;
@@ -222,7 +222,7 @@ const SellerProfileEdit = () => {
   useEffect(() => {
     const loadGoogleMapsScript = async () => {
       await loadScript(
-        `https://maps.googleapis.com/maps/api/js?key=${YOUR_API_KEY}&libraries=places`,
+        `https://maps.googleapis.com/maps/api/js?key=${MAPS_KEY}&libraries=places`,
         document.head,
         "google-maps-api3"
       );
@@ -271,7 +271,7 @@ const SellerProfileEdit = () => {
       const response = await axios.get(
         `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
           fullAddress
-        )}&key=${YOUR_API_KEY}`
+        )}&key=${MAPS_KEY}`
       );
       const results = response.data.results;
       console.log(results);

@@ -224,6 +224,8 @@ const ProductDetails = ({ productsList }) => {
             flexDirection: "column",
             gap: 6,
             position: "relative",
+            overflowY: "auto",
+            paddingBottom: "0",
           }}
         >
           <Box sx={{ display: "flex", height: "70%", gap: 2 }}>

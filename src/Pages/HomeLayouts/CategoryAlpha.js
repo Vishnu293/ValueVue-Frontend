@@ -27,7 +27,7 @@ const CategoryAlpha = () => {
               width: "16.6vw",
               "&: hover": {
                 color: (theme) => theme.palette.primary.main,
-              }
+              },
             }}
             onClick={() => navigate("/electronics")}
           />
@@ -40,7 +40,7 @@ const CategoryAlpha = () => {
               width: "16.6vw",
               "&: hover": {
                 color: (theme) => theme.palette.primary.main,
-              }
+              },
             }}
             onClick={() => navigate("/groceryandfood")}
           />
@@ -53,7 +53,7 @@ const CategoryAlpha = () => {
               width: "16.6vw",
               "&: hover": {
                 color: (theme) => theme.palette.primary.main,
-              }
+              },
             }}
             onClick={() => navigate("/beautyandpersonalcare")}
           />
@@ -66,7 +66,7 @@ const CategoryAlpha = () => {
               width: "16.6vw",
               "&: hover": {
                 color: (theme) => theme.palette.primary.main,
-              }
+              },
             }}
             onClick={() => navigate("/healthandwellness")}
           />
@@ -79,7 +79,7 @@ const CategoryAlpha = () => {
               width: "16.6vw",
               "&: hover": {
                 color: (theme) => theme.palette.primary.main,
-              }
+              },
             }}
             onClick={() => navigate("/officeandstationery")}
           />
@@ -92,7 +92,7 @@ const CategoryAlpha = () => {
               width: "16.6vw",
               "&: hover": {
                 color: (theme) => theme.palette.primary.main,
-              }
+              },
             }}
             onClick={() => navigate("/others")}
           />

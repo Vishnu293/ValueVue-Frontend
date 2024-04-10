@@ -2,7 +2,6 @@ import { Card, Box, Typography, Divider, Button } from "@mui/material";
 import React, { useRef, useState } from "react";
 import Logo from "../../Assets/logo.png";
 import QRCode from "react-qr-code";
-//import QRCode from "qrcode.react";
 import html2canvas from "html2canvas";
 
 const SellerQR = ({ sellerId, sellerName, dataUrl }) => {
@@ -145,7 +144,7 @@ const SellerQR = ({ sellerId, sellerName, dataUrl }) => {
           "&:hover": {
             color: "gold",
           },
-          fontWeight: "600"
+          fontWeight: "600",
         }}
       >
         Download

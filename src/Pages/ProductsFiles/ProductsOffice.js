@@ -200,16 +200,16 @@ const ProductsOffice = () => {
   return (
     <ThemeProvider theme={lightTheme}>
       <Card sx={{ backgroundColor: "white", padding: "20px", margin: "15px" }}>
-      <Box style={{ display: "flex", justifyContent: "space-between" }}>
-            <Typography
-              variant="h1"
-              sx={{
-                fontSize: "1.5rem",
-                fontWeight: (theme) => theme.typography.fontWeightBold,
-              }}
-            >
-              Office and Stationery Near You
-            </Typography>
+        <Box style={{ display: "flex", justifyContent: "space-between" }}>
+          <Typography
+            variant="h1"
+            sx={{
+              fontSize: "1.5rem",
+              fontWeight: (theme) => theme.typography.fontWeightBold,
+            }}
+          >
+            Office and Stationery Near You
+          </Typography>
           {!displayAllProducts && (
             <Button
               variant="contained"

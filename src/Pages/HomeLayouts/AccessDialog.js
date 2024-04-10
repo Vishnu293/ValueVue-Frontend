@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {
   Dialog,
-  DialogTitle,
   DialogContent,
   DialogActions,
   Button,
@@ -16,12 +15,10 @@ const AccessDialog = ({ open, handleClose }) => {
   const navigate = useNavigate();
 
   const handleSignIn = () => {
-    // Handle sign in action
     navigate("/signin");
   };
 
   const handleSignUp = () => {
-    // Handle sign up action
     navigate("/signup");
   };
 

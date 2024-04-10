@@ -16,7 +16,7 @@ import ProductsOffice from "../ProductsFiles/ProductsOffice.js";
 import ProductsOthers from "../ProductsFiles/ProductsOthers.js";
 import { useDispatch } from "react-redux";
 import { useLocation } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { selectLocation } from "../../redux/location/locationSlice.js";
 import CategoryAlpha from "./CategoryAlpha.js";
 

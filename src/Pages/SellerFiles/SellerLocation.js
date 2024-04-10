@@ -11,9 +11,7 @@ import Loading from "../Loading";
 import Source from "../../Assets/source.png";
 import Destination from "../../Assets/destination.png";
 
-const GOOGLE_MAPS_API_KEY = "AIzaSyC-7H1dWirXia_4m4I2drN1ID9SVFIE3Sk";
-//AIzaSyC-7H1dWirXia_4m4I2drN1ID9SVFIE3Sk
-//AIzaSyCNAFWcEGz59qyWo9-UU2VhDVriQJdpDlM
+const MAPS_KEY = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
 
 const SellerLocation = () => {
   const navigate = useNavigate();
@@ -66,7 +64,7 @@ const SellerLocation = () => {
     console.log("current location", typeof lat, lng, description);
     try {
       await axios.get(
-        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyC-7H1dWirXia_4m4I2drN1ID9SVFIE3Sk`
+        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${MAPS_KEY}`
       );
       if (typeof lat === "number" && typeof lng === "number") {
         showMap(lng, lat);

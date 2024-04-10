@@ -146,7 +146,7 @@ let MainSignup = () => {
               flexBasis: "65%",
               position: "relative",
               maxHeight: "100vh",
-              height: "100vh"
+              height: "100vh",
             }}
           >
             {value === "customer" ? <Signup /> : <SellerSignup />}

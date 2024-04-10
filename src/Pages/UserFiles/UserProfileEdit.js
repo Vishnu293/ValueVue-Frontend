@@ -32,7 +32,7 @@ import {
   signInFailure,
 } from "../../redux/user/userSlice.js";
 
-const YOUR_API_KEY = "AIzaSyC-7H1dWirXia_4m4I2drN1ID9SVFIE3Sk";
+const MAPS_KEY = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
 
 function loadScript(src, position, id) {
   return new Promise((resolve, reject) => {
@@ -122,7 +122,7 @@ const UserProfileEdit = () => {
           const { latitude, longitude } = position.coords;
           axios
             .get(
-              `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${YOUR_API_KEY}`
+              `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${MAPS_KEY}`
             )
             .then((response) => {
               const results = response.data.results;
@@ -195,7 +195,6 @@ const UserProfileEdit = () => {
         const place = autocomplete.getPlace();
         const latitude = place.geometry.location.lat();
         const longitude = place.geometry.location.lng();
-        console.log(place.geometry.location.lat());
 
         setUserDetails((prevData) => ({
           ...prevData,
@@ -228,7 +227,7 @@ const UserProfileEdit = () => {
   useEffect(() => {
     const loadGoogleMapsScript = async () => {
       await loadScript(
-        `https://maps.googleapis.com/maps/api/js?key=${YOUR_API_KEY}&libraries=places`,
+        `https://maps.googleapis.com/maps/api/js?key=${MAPS_KEY}&libraries=places`,
         document.head,
         "google-maps-api2"
       );
@@ -284,13 +283,11 @@ const UserProfileEdit = () => {
       const response = await axios.get(
         `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
           fullAddress
-        )}&key=${YOUR_API_KEY}`
+        )}&key=${MAPS_KEY}`
       );
       const results = response.data.results;
-      console.log("resultssssss", results);
       if (results.length > 0) {
         const location = results[0].geometry.location;
-        console.log("lat", location.lat);
         setUserDetails((prevData) => ({
           ...prevData,
           userCords: {
@@ -298,17 +295,13 @@ const UserProfileEdit = () => {
             lng: location.lng,
           },
         }));
-        console.log(userDetails);
-        console.log("locationsssss", location);
       }
-      console.log("ccccc", userDetails);
     } catch (error) {
       console.error("Error converting address to coordinates:", error);
     }
   };
 
   const Save = async () => {
-    /*     await convertAddressToLatLng();*/
     const userDetailsObj = {
       userName: userDetails.userName,
       userEmail: userDetails.userEmail,
@@ -336,13 +329,6 @@ const UserProfileEdit = () => {
       const sanitizedValue = value !== undefined ? value : "";
       detailsFormData.append(key, sanitizedValue);
     }
-
-    /*     if (userDetails.userCords !== null) {
-      detailsFormData.append("userCords", [
-        userDetails.userCords.lat,
-        userDetails.userCords.lng,
-      ]);
-    } */
 
     if (userDetails.userAvatar instanceof File) {
       detailsFormData.append("userAvatar", userDetails.userAvatar);
