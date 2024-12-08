@@ -43,6 +43,7 @@ const Edit = () => {
     productPrice: "",
     productCategory: "",
     productDesc: "",
+    productStock: "",
     productImage: null,
     productFeatures: {},
     customFeatures: {},
@@ -52,6 +53,7 @@ const Edit = () => {
     productPrice: "",
     productCategory: "",
     productDesc: "",
+    productStock: "",
     productImage: null,
     productFeatures: {},
     customFeatures: {},
@@ -107,6 +109,8 @@ const Edit = () => {
         checkProductDetails.productPrice &&
       modifiedProductDetails.productCategory ===
         checkProductDetails.productCategory &&
+      modifiedProductDetails.productStock ===
+        checkProductDetails.productStock &&
       modifiedProductDetails.productDesc === checkProductDetails.productDesc &&
       modifiedProductDetails.productImage ===
         checkProductDetails.productImage &&
@@ -253,6 +257,12 @@ const Edit = () => {
         return (
           <>
             <TextField
+              label="Brand"
+              onChange={(e) => onFeatureChange(e, "Brand")}
+              value={productFeatures?.Brand || ""}
+              fullWidth
+            />
+            <TextField
               label="Ingredients"
               onChange={(e) => onFeatureChange(e, "Ingredients")}
               value={productFeatures?.Ingredients || ""}
@@ -276,17 +286,17 @@ const Edit = () => {
               value={productFeatures?.PackagingType || ""}
               fullWidth
             />
-            <TextField
-              label="Certifications"
-              onChange={(e) => onFeatureChange(e, "Certifications")}
-              value={productFeatures?.Certifications || ""}
-              fullWidth
-            />
           </>
         );
       case "Beauty and Personal Care":
         return (
           <>
+            <TextField
+              label="Brand"
+              onChange={(e) => onFeatureChange(e, "Brand")}
+              value={productFeatures?.Brand || ""}
+              fullWidth
+            />
             <TextField
               label="Ingredients"
               onChange={(e) => onFeatureChange(e, "Ingredients")}
@@ -311,17 +321,17 @@ const Edit = () => {
               value={productFeatures?.SafetyInformation || ""}
               fullWidth
             />
-            <TextField
-              label="Product Benefits"
-              onChange={(e) => onFeatureChange(e, "ProductBenefits")}
-              value={productFeatures?.ProductBenefits || ""}
-              fullWidth
-            />
           </>
         );
       case "Health and Wellness":
         return (
           <>
+            <TextField
+              label="Brand"
+              onChange={(e) => onFeatureChange(e, "Brand")}
+              value={productFeatures?.Brand || ""}
+              fullWidth
+            />
             <TextField
               label="Ingredients"
               onChange={(e) => onFeatureChange(e, "Ingredients")}
@@ -346,17 +356,17 @@ const Edit = () => {
               value={productFeatures?.SafetyInformation || ""}
               fullWidth
             />
-            <TextField
-              label="Product Benefits"
-              onChange={(e) => onFeatureChange(e, "ProductBenefits")}
-              value={productFeatures?.ProductBenefits || ""}
-              fullWidth
-            />
           </>
         );
       case "Office and Stationery":
         return (
           <>
+            <TextField
+              label="Brand"
+              onChange={(e) => onFeatureChange(e, "Brand")}
+              value={productFeatures?.Brand || ""}
+              fullWidth
+            />
             <TextField
               label="Material Type"
               onChange={(e) => onFeatureChange(e, "MaterialType")}
@@ -381,17 +391,17 @@ const Edit = () => {
               value={productFeatures?.Durability || ""}
               fullWidth
             />
-            <TextField
-              label="Packaging Type"
-              onChange={(e) => onFeatureChange(e, "PackagingType")}
-              value={productFeatures?.PackagingType || ""}
-              fullWidth
-            />
           </>
         );
       case "Others":
         return (
           <>
+            <TextField
+              label="Brand"
+              onChange={(e) => onFeatureChange(e, "Brand")}
+              value={productFeatures?.Brand || ""}
+              fullWidth
+            />
             <TextField
               label="Dimensions"
               onChange={(e) => onFeatureChange(e, "Dimensions")}
@@ -414,12 +424,6 @@ const Edit = () => {
               label="Safety Information"
               onChange={(e) => onFeatureChange(e, "SafetyInformation")}
               value={productFeatures?.SafetyInformation || ""}
-              fullWidth
-            />
-            <TextField
-              label="Warranty Information"
-              onChange={(e) => onFeatureChange(e, "WarrantyInformation")}
-              value={productFeatures?.WarrantyInformation || ""}
               fullWidth
             />
           </>
@@ -532,18 +536,52 @@ const Edit = () => {
                 onChange(e);
               }}
               fullWidth
+              required
             />
-            <TextField
-              id="productPrice"
-              label="Product Price"
-              variant="outlined"
-              value={modifiedProductDetails.productPrice}
-              name="productPrice"
-              onChange={(e) => {
-                onChange(e);
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                gap: 2,
               }}
-              fullWidth
-            />
+            >
+              <TextField
+                id="productPrice"
+                label="Price(Only in Numbers)"
+                variant="outlined"
+                value={modifiedProductDetails.productPrice}
+                name="productPrice"
+                onChange={(e) => {
+                  onChange(e);
+                }}
+                fullWidth
+                required
+                sx={{ flexBasis: "50%" }}
+              />
+              <FormControl
+                variant="outlined"
+                fullWidth
+                sx={{
+                  flexBasis: "50%",
+                }}
+              >
+                <InputLabel id="productStockLabel">Product Stock</InputLabel>
+                <Select
+                  labelId="productStockLabel"
+                  id="productStock"
+                  label="Stock Available"
+                  value={modifiedProductDetails.productStock}
+                  name="productStock"
+                  required
+                  onChange={onChange}
+                >
+                  <MenuItem value="In Stock">In Stock</MenuItem>
+                  <MenuItem value="Low in Stock">Low in Stock</MenuItem>
+                  <MenuItem value="Out of Stock">Out of Stock</MenuItem>
+                </Select>
+              </FormControl>
+            </Box>
             <TextField
               multiline
               rows={2}
@@ -552,6 +590,7 @@ const Edit = () => {
               style={{ width: "100%", height: "50px", marginBottom: "20px" }}
               value={modifiedProductDetails.productDesc}
               name="productDesc"
+              required
               onChange={(e) => {
                 onChange(e);
               }}
@@ -570,6 +609,7 @@ const Edit = () => {
                 label="Category"
                 value={modifiedProductDetails.productCategory}
                 name="productCategory"
+                required
                 onChange={(e) => {
                   onChange(e);
                 }}
@@ -582,8 +622,10 @@ const Edit = () => {
               </Select>
             </FormControl>
             <FormControl fullWidth>
-              <FormHelperText sx={{ textAlign: "center" }}>
-                Select an image file
+              <FormHelperText
+                sx={{ textAlign: "center", marginBottom: "0.5rem" }}
+              >
+                Select an image file*
               </FormHelperText>
               <Input
                 id="file-upload"
@@ -591,6 +633,7 @@ const Edit = () => {
                 accept="image/*"
                 name="productImage"
                 onChange={onChange}
+                required
                 endAdornment={
                   <InputAdornment position="end">
                     <IconButton component="span">
@@ -610,7 +653,6 @@ const Edit = () => {
             }}
           >
             <Typography sx={{ textAlign: "left" }}>Add Features:</Typography>
-            {/* Rendering additional feature inputs based on the selected category */}
             {renderFeatureInputs()}
           </Box>
           <Box
@@ -620,7 +662,6 @@ const Edit = () => {
               flexBasis: "calc(100% / 3)",
             }}
           >
-            {/* Custom feature inputs */}
             <Typography sx={{ textAlign: "left", paddingBottom: "1rem" }}>
               Custom Features:
             </Typography>

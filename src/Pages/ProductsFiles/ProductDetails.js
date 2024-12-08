@@ -25,6 +25,9 @@ import {
 } from "../../redux/user/userSlice.js";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
+import Out from "../../Assets/outofstock.png";
+import In from "../../Assets/instock.png";
+import Low from "../../Assets/lowinstock.png";
 
 const ProductDetails = ({ productsList }) => {
   const dispatch = useDispatch();
@@ -208,9 +211,9 @@ const ProductDetails = ({ productsList }) => {
           margin: "15px",
           height: "80vh",
           maxHeight: "fit-content",
-          width: "90vw",
+          width: "93vw",
           margin: "0 auto",
-          gap: 1,
+          gap: 2,
         }}
       >
         <Card
@@ -220,6 +223,9 @@ const ProductDetails = ({ productsList }) => {
             display: "flex",
             flexDirection: "column",
             gap: 6,
+            position: "relative",
+            overflowY: "auto",
+            paddingBottom: "0",
           }}
         >
           <Box sx={{ display: "flex", height: "70%", gap: 2 }}>
@@ -227,6 +233,8 @@ const ProductDetails = ({ productsList }) => {
               component="img"
               sx={{
                 width: "40%",
+                maxWidth: "40%",
+                maxHeight: "110%",
                 objectFit: "contain",
                 alignSelf: "flex-start",
                 border: "1px solid black",
@@ -286,6 +294,22 @@ const ProductDetails = ({ productsList }) => {
               </Typography>
             </CardContent>
           </Box>
+          <img
+            src={
+              selectedProduct?.productStock === "Out of Stock"
+                ? Out
+                : selectedProduct?.productStock === "Low in Stock"
+                ? Low
+                : In
+            }
+            width={"8%"}
+            style={{
+              padding: "2rem 0 1rem 0",
+              position: "absolute",
+              right: "1rem",
+              top: "-1rem",
+            }}
+          />
         </Card>
         <Card
           sx={{
@@ -323,11 +347,11 @@ const ProductDetails = ({ productsList }) => {
                   objectFit: "contain",
                 }}
                 image={`data:${
-                  selectedProduct.sellerId.sellerAvatar.mimetype
-                };base64,${selectedProduct.sellerId.sellerAvatar.buffer.toString(
+                  selectedProduct?.sellerId?.sellerAvatar?.mimetype
+                };base64,${selectedProduct?.sellerId?.sellerAvatar?.buffer?.toString(
                   "base64"
                 )}`}
-                alt={selectedProduct.sellerId?.sellerAvatar}
+                alt={selectedProduct?.sellerId?.sellerAvatar}
               />
               <Typography sx={{ fontSize: "100%", textAlign: "center" }}>
                 {selectedProduct.sellerId.sellerName}

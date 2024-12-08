@@ -12,6 +12,8 @@ import {
   Icon,
   Typography,
 } from "@mui/material";
+import { ThemeProvider } from "@mui/material/styles";
+import { lightTheme, darkTheme } from "../MyTheme";
 import React, { useEffect, useState, useRef } from "react";
 import MyLocationIcon from "@mui/icons-material/MyLocation";
 import PhotoCameraIcon from "@mui/icons-material/PhotoCamera";
@@ -30,7 +32,7 @@ import {
   signInFailure,
 } from "../../redux/user/userSlice.js";
 
-const YOUR_API_KEY = "AIzaSyC-7H1dWirXia_4m4I2drN1ID9SVFIE3Sk";
+const MAPS_KEY = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
 
 function loadScript(src, position, id) {
   return new Promise((resolve, reject) => {
@@ -56,9 +58,9 @@ const UserProfileEdit = () => {
   const [resetFlag, setResetFlag] = useState(true);
   const { currentUser } = useSelector((state) => state.user);
   const navigate = useNavigate();
-  const imageData = currentUser?.data.userAvatar.buffer;
+  const imageData = currentUser?.data?.userAvatar?.buffer;
   const initialDataUrl = `data:${
-    currentUser.data.userAvatar.mimetype
+    currentUser?.data?.userAvatar?.mimetype
   };base64,${imageData?.toString("base64")}`;
   const [userDetails, setUserDetails] = useState({
     ...currentUser.data,
@@ -120,7 +122,7 @@ const UserProfileEdit = () => {
           const { latitude, longitude } = position.coords;
           axios
             .get(
-              `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${YOUR_API_KEY}`
+              `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${MAPS_KEY}`
             )
             .then((response) => {
               const results = response.data.results;
@@ -193,7 +195,6 @@ const UserProfileEdit = () => {
         const place = autocomplete.getPlace();
         const latitude = place.geometry.location.lat();
         const longitude = place.geometry.location.lng();
-        console.log(place.geometry.location.lat());
 
         setUserDetails((prevData) => ({
           ...prevData,
@@ -226,7 +227,7 @@ const UserProfileEdit = () => {
   useEffect(() => {
     const loadGoogleMapsScript = async () => {
       await loadScript(
-        `https://maps.googleapis.com/maps/api/js?key=${YOUR_API_KEY}&libraries=places`,
+        `https://maps.googleapis.com/maps/api/js?key=${MAPS_KEY}&libraries=places`,
         document.head,
         "google-maps-api2"
       );
@@ -272,16 +273,19 @@ const UserProfileEdit = () => {
     });
   };
 
+  useEffect(() => {
+    convertAddressToLatLng();
+  }, []);
+
   const convertAddressToLatLng = async () => {
     const fullAddress = `${userDetails.userDoor}, ${userDetails.userStreet}, ${userDetails.userCity}, ${userDetails.userState}, ${userDetails.userDistrict}, ${userDetails.userCountry}`;
     try {
       const response = await axios.get(
         `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
           fullAddress
-        )}&key=${YOUR_API_KEY}`
+        )}&key=${MAPS_KEY}`
       );
       const results = response.data.results;
-      console.log(results);
       if (results.length > 0) {
         const location = results[0].geometry.location;
         setUserDetails((prevData) => ({
@@ -298,7 +302,6 @@ const UserProfileEdit = () => {
   };
 
   const Save = async () => {
-    await convertAddressToLatLng();
     const userDetailsObj = {
       userName: userDetails.userName,
       userEmail: userDetails.userEmail,
@@ -312,6 +315,14 @@ const UserProfileEdit = () => {
       userZipCode: userDetails.userZipCode,
     };
 
+    console.log("bbbb", userDetails, userDetailsObj);
+    if (userDetails.userCords !== null) {
+      userDetailsObj.userCords = [
+        userDetails.userCords.lat,
+        userDetails.userCords.lng,
+      ];
+    }
+
     const detailsFormData = new FormData();
 
     for (const [key, value] of Object.entries(userDetailsObj)) {
@@ -319,19 +330,11 @@ const UserProfileEdit = () => {
       detailsFormData.append(key, sanitizedValue);
     }
 
-    if (userDetails.userCords !== null) {
-      detailsFormData.append("userCords", [
-        userDetails.userCords.lat,
-        userDetails.userCords.lng,
-      ]);
-    }
-
     if (userDetails.userAvatar instanceof File) {
       detailsFormData.append("userAvatar", userDetails.userAvatar);
     }
 
     dispatch(signInStart());
-
     await axios
       .post(
         `http://localhost:8080/user/edit/details/${userDetails._id}`,
@@ -426,353 +429,395 @@ const UserProfileEdit = () => {
   };
 
   return (
-    <Box>
-      <Navbar />
-      <Category />
-      <Icon
-        style={{
-          cursor: "pointer",
-          padding: "1.5rem",
-          marginLeft: "1rem",
-          marginBottom: "0.5rem",
-          color: "black",
-        }}
-        onClick={() => navigate("/userprofile")}
-      >
-        <ArrowBackIcon />
-      </Icon>
-      <Card
-        sx={{
-          padding: "20px",
-          margin: "15px",
-          marginTop: "0",
-          height: "70vh",
-          width: "90vw",
-          margin: "1.8rem auto",
-          gap: 2,
-          display: "flex",
-          justifyContent: "space-between",
-        }}
-      >
-        <div
+    <ThemeProvider theme={lightTheme}>
+      <Box>
+        <Navbar />
+        <Category />
+        <Icon
           style={{
-            flexBasis: "20%",
+            cursor: "pointer",
+            marginLeft: "1.5rem",
+            marginBottom: "0.5rem",
+            marginTop: "1rem",
+            color: "black",
+            fontSize: "1.5rem",
+          }}
+          onClick={() => navigate("/userprofile")}
+        >
+          <ArrowBackIcon sx={{ fontSize: "22.5px" }} />
+        </Icon>
+        <Box
+          sx={{
+            height: "80vh",
+            width: "93vw",
+            margin: "0 auto",
             display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            position: "relative",
-            marginTop: "3.1vh",
+            gap: 2,
           }}
         >
-          <label htmlFor="userAvatar">
-            <input
-              type="file"
-              accept="image/*"
-              className="userAvatar"
-              id="userAvatar"
-              onChange={handleFileChange}
-              ref={inputRef}
-              hidden
-            />
-            <Avatar
-              alt="User Profile"
-              src={userDetails.dataUrl}
-              sx={{
-                margin: "27% auto",
-                width: "100px",
-                height: "100px",
-                cursor: "pointer",
-                position: "relative",
-                overflow: "hidden",
-              }}
-            />
-          </label>
-          <Avatar
-            style={{
-              position: "absolute",
-              top: 27,
-              backgroundColor: "rgba(0, 0, 0, 0.3)",
-              textAlign: "center",
-              width: "100px",
-              height: "100px",
-            }}
-          >
-            <IconButton size="small" onClick={handleImageClick}>
-              <PhotoCameraIcon sx={{ color: "white" }} />
-            </IconButton>
-          </Avatar>
-          <p>{currentUser.data.userName}</p>
-        </div>
-        <Divider orientation="vertical" variant="middle" />
-        <div style={{ flexBasis: "80%", height: "72vh" }}>
-          <h1
-            style={{
-              textAlign: "center",
-              margin: "20px auto",
-              fontSize: "20px",
-              paddingBottom: "0.5rem",
-            }}
-          >
-            Personal Details
-          </h1>
           <Box
             sx={{
               display: "flex",
+              flexDirection: "column",
+              flexBasis: "20%",
+              gap: 2,
             }}
           >
-            <Box
+            <Card
               sx={{
-                width: "50%",
+                backgroundColor: "white",
+                flexBasis: "30%",
+                display: "flex",
+                flexDirection: "column",
               }}
             >
-              <List
-                sx={{
-                  marginRight: "10px",
-                  marginBottom: "10px",
+              <Box
+                style={{
+                  margin: "1rem",
+                  marginBottom: "0",
+                  flexBasis: "80%",
                   display: "flex",
-                  flexDirection: "column",
-                  gap: "0.5rem",
+                  flexDirection: "row",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  gap: 2,
                 }}
               >
-                <ListItem>
-                  <ListItemText primary="Username:" />
-                  <ListItemText sx={{ textAlign: "end" }}>
-                    <TextField
-                      value={userDetails.userName}
-                      name="userName"
-                      error={!!errors.userName}
-                      helperText={errors.userName}
-                      onChange={(e) => {
-                        onChange(e);
-                      }}
-                      sx={{ "& input": { padding: "5px 10px" } }}
+                <label htmlFor="userAvatar">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="userAvatar"
+                    id="userAvatar"
+                    onChange={handleFileChange}
+                    ref={inputRef}
+                    hidden
+                  />
+                  <Avatar
+                    alt="User Profile"
+                    src={userDetails.dataUrl}
+                    sx={{
+                      margin: "1rem",
+                      width: "100px",
+                      height: "100px",
+                      flexBasis: "40%",
+                    }}
+                  />
+                </label>
+                <Avatar
+                  sx={{
+                    position: "absolute",
+                    backgroundColor: "rgba(0, 0, 0, 0.3)",
+                    left: 69,
+                    textAlign: "center",
+                    width: "100px",
+                    height: "100px",
+                    margin: "1rem",
+                  }}
+                >
+                  <IconButton size="small" onClick={handleImageClick}>
+                    <PhotoCameraIcon
+                      sx={{ color: "white", fontSize: "20px" }}
                     />
-                  </ListItemText>
-                </ListItem>
-                <ListItem>
-                  <ListItemText primary="Email" />
-                  <ListItemText sx={{ textAlign: "end" }}>
-                    <TextField
-                      value={userDetails.userEmail}
-                      name="userEmail"
-                      onChange={(e) => {
-                        onChange(e);
-                      }}
-                      error={!!errors.userEmail}
-                      helperText={errors.userEmail}
-                      sx={{ "& input": { padding: "5px 10px" } }}
-                    />
-                  </ListItemText>
-                </ListItem>
-                <ListItem>
-                  <ListItemText primary="Mobile" />
-                  <ListItemText sx={{ textAlign: "end" }}>
-                    <TextField
-                      value={userDetails.userMobile}
-                      name="userMobile"
-                      error={!!errors.userMobile}
-                      helperText={errors.userMobile}
-                      onChange={(e) => {
-                        onChange(e);
-                      }}
-                      sx={{ "& input": { padding: "5px 10px" } }}
-                    />
-                  </ListItemText>
-                </ListItem>
+                  </IconButton>
+                </Avatar>
                 <Box
                   sx={{
                     display: "flex",
                     flexDirection: "column",
-                    margin: "1rem 0.5rem 0 0.5rem",
-                    gap: 1,
+                    flexBasis: "60%",
                   }}
                 >
-                  <Button
-                    onClick={getCurrentLocation}
-                    variant="contained"
+                  <Typography sx={{ fontSize: "12px" }}>Hello,</Typography>
+                  <Typography
                     sx={{
-                      display: "flex",
-                      justifyContent: "center",
-                      width: "50%",
-                      margin: "0.5rem auto",
+                      fontSize: "18px",
+                      fontWeight: (theme) => theme.typography.fontWeightBold,
                     }}
                   >
-                    <MyLocationIcon />
-                  </Button>
-                  <Typography
-                    variant="body2"
-                    color="textSecondary"
-                    sx={{ textAlign: "center" }}
-                  >
-                    We recommend double clicking the button for accurate
-                    location, OR you can enter the details manually.
+                    {currentUser.data.userName}
                   </Typography>
                 </Box>
-              </List>
-            </Box>
-            <Divider
-              orientation="vertical"
-              variant="middle"
-              flexItem
-              sx={{ height: "50vh" }}
-            />
-            <Box
-              sx={{
-                width: "50%",
-              }}
-            >
-              <List
+              </Box>
+            </Card>
+            <Card sx={{ flexBasis: "70%" }}></Card>
+          </Box>
+          <Card sx={{ flexBasis: "80%", padding: "1rem" }}>
+            <Box style={{ flexBasis: "80%", height: "72vh" }}>
+              <Typography
                 sx={{
-                  marginRight: "10px",
-                  marginBottom: "10px",
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "0.5rem",
+                  textAlign: "center",
+                  margin: "15px auto",
+                  fontSize: "1.5rem",
+                  fontWeight: (theme) => theme.typography.fontWeightBold,
                 }}
               >
-                <ListItem>
-                  <ListItemText primary="Door" />
-                  <ListItemText sx={{ textAlign: "end" }}>
-                    <TextField
-                      value={userDetails.userDoor}
-                      name="userDoor"
-                      error={!!errors.userDoor}
-                      helperText={errors.userDoor}
-                      onChange={(e) => {
-                        onChange(e);
+                Personal Details
+              </Typography>
+              <Box
+                sx={{
+                  display: "flex",
+                }}
+              >
+                <Box
+                  sx={{
+                    width: "50%",
+                  }}
+                >
+                  <List
+                    sx={{
+                      marginRight: "10px",
+                      marginBottom: "10px",
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "0.5rem",
+                    }}
+                  >
+                    <ListItem>
+                      <ListItemText primary="User name:" />
+                      <ListItemText sx={{ textAlign: "end" }}>
+                        <TextField
+                          value={userDetails.userName}
+                          name="userName"
+                          error={!!errors.userName}
+                          helperText={errors.userName}
+                          onChange={(e) => {
+                            onChange(e);
+                          }}
+                          sx={{ "& input": { padding: "5px 10px" } }}
+                        />
+                      </ListItemText>
+                    </ListItem>
+                    <ListItem>
+                      <ListItemText primary="Email" />
+                      <ListItemText sx={{ textAlign: "end" }}>
+                        <TextField
+                          value={userDetails.userEmail}
+                          name="userEmail"
+                          onChange={(e) => {
+                            onChange(e);
+                          }}
+                          error={!!errors.userEmail}
+                          helperText={errors.userEmail}
+                          sx={{ "& input": { padding: "5px 10px" } }}
+                        />
+                      </ListItemText>
+                    </ListItem>
+                    <ListItem>
+                      <ListItemText primary="Mobile" />
+                      <ListItemText sx={{ textAlign: "end" }}>
+                        <TextField
+                          value={userDetails.userMobile}
+                          name="userMobile"
+                          error={!!errors.userMobile}
+                          helperText={errors.userMobile}
+                          onChange={(e) => {
+                            onChange(e);
+                          }}
+                          sx={{ "& input": { padding: "5px 10px" } }}
+                        />
+                      </ListItemText>
+                    </ListItem>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        margin: "1rem 0.5rem 0 0.5rem",
+                        gap: 1,
                       }}
-                      sx={{ "& input": { padding: "5px 10px" } }}
-                    />
-                  </ListItemText>
-                </ListItem>
-                <ListItem>
-                  <ListItemText primary="Street" />
-                  <ListItemText sx={{ textAlign: "end" }}>
-                    <TextField
-                      value={userDetails.userStreet}
-                      name="userStreet"
-                      error={!!errors.userStreet}
-                      helperText={errors.userStreet}
-                      onChange={(e) => {
-                        onChange(e);
-                      }}
-                      sx={{ "& input": { padding: "5px 10px" } }}
-                    />
-                  </ListItemText>
-                </ListItem>
-                <ListItem>
-                  <ListItemText primary="City" />
-                  <ListItemText sx={{ textAlign: "end" }}>
-                    <TextField
-                      value={userDetails.userCity}
-                      name="userCity"
-                      id="userCity"
-                      error={!!errors.userCity}
-                      helperText={errors.userCity}
-                      onChange={(e) => {
-                        onChange(e);
-                      }}
-                      sx={{ "& input": { padding: "5px 10px" } }}
-                    />
-                  </ListItemText>
-                </ListItem>
-                <ListItem>
-                  <ListItemText primary="District" />
-                  <ListItemText sx={{ textAlign: "end" }}>
-                    <TextField
-                      value={userDetails.userDistrict}
-                      name="userDistrict"
-                      error={!!errors.userDistrict}
-                      helperText={errors.userDistrict}
-                      onChange={(e) => {
-                        onChange(e);
-                      }}
-                      sx={{ "& input": { padding: "5px 10px" } }}
-                    />
-                  </ListItemText>
-                </ListItem>
-                <ListItem>
-                  <ListItemText primary="State" />
-                  <ListItemText sx={{ textAlign: "end" }}>
-                    <TextField
-                      value={userDetails.userState}
-                      name="userState"
-                      error={!!errors.userState}
-                      helperText={errors.userState}
-                      onChange={(e) => {
-                        onChange(e);
-                      }}
-                      sx={{ "& input": { padding: "5px 10px" } }}
-                    />
-                  </ListItemText>
-                </ListItem>
-                <Box sx={{ display: "flex", width: "100%" }}>
-                  <ListItem sx={{ display: "flex", width: "50%" }}>
-                    <ListItemText primary="Country" sx={{ width: "40%" }} />
-                    <ListItemText sx={{ textAlign: "end", width: "60%" }}>
-                      <TextField
-                        value={userDetails.userCountry}
-                        name="userCountry"
-                        error={!!errors.userCountry}
-                        helperText={errors.userCountry}
-                        onChange={(e) => {
-                          onChange(e);
+                    >
+                      <Button
+                        onClick={getCurrentLocation}
+                        variant="contained"
+                        sx={{
+                          display: "flex",
+                          justifyContent: "center",
+                          flexBasis: "30%",
+                          margin: "0.5rem auto",
                         }}
-                        sx={{ "& input": { padding: "5px 10px" } }}
-                      />
-                    </ListItemText>
-                  </ListItem>
-                  <ListItem sx={{ display: "flex", width: "50%" }}>
-                    <ListItemText primary="Zip Code" sx={{ width: "50%" }} />
-                    <ListItemText sx={{ textAlign: "end", width: "50%" }}>
-                      <TextField
-                        value={userDetails.userZipCode}
-                        name="userZipCode"
-                        error={!!errors.userZipCode}
-                        helperText={errors.userZipCode}
-                        onChange={(e) => {
-                          onChange(e);
-                        }}
-                        sx={{ "& input": { padding: "5px 10px" } }}
-                      />
-                    </ListItemText>
-                  </ListItem>
+                      >
+                        <MyLocationIcon sx={{ fontSize: "20px" }} />
+                      </Button>
+                      <Typography
+                        variant="body2"
+                        color="textSecondary"
+                        sx={{ textAlign: "center" }}
+                      >
+                        We recommend double clicking the button for{" "}
+                        <b>ACCURATE LOCATION</b>, OR you can enter the details
+                        manually.
+                      </Typography>
+                    </Box>
+                  </List>
                 </Box>
-              </List>
+                <Divider
+                  orientation="vertical"
+                  variant="middle"
+                  flexItem
+                  sx={{ height: "50vh" }}
+                />
+                <Box
+                  sx={{
+                    width: "50%",
+                  }}
+                >
+                  <List
+                    sx={{
+                      marginRight: "10px",
+                      marginBottom: "10px",
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "0.5rem",
+                    }}
+                  >
+                    <ListItem>
+                      <ListItemText primary="Door" />
+                      <ListItemText sx={{ textAlign: "end" }}>
+                        <TextField
+                          value={userDetails.userDoor}
+                          name="userDoor"
+                          error={!!errors.userDoor}
+                          helperText={errors.userDoor}
+                          onChange={(e) => {
+                            onChange(e);
+                          }}
+                          sx={{ "& input": { padding: "5px 10px" } }}
+                        />
+                      </ListItemText>
+                    </ListItem>
+                    <ListItem>
+                      <ListItemText primary="Street" />
+                      <ListItemText sx={{ textAlign: "end" }}>
+                        <TextField
+                          value={userDetails.userStreet}
+                          name="userStreet"
+                          error={!!errors.userStreet}
+                          helperText={errors.userStreet}
+                          onChange={(e) => {
+                            onChange(e);
+                          }}
+                          sx={{ "& input": { padding: "5px 10px" } }}
+                        />
+                      </ListItemText>
+                    </ListItem>
+                    <ListItem>
+                      <ListItemText primary="City" />
+                      <ListItemText sx={{ textAlign: "end" }}>
+                        <TextField
+                          value={userDetails.userCity}
+                          name="userCity"
+                          id="userCity"
+                          error={!!errors.userCity}
+                          helperText={errors.userCity}
+                          onChange={(e) => {
+                            onChange(e);
+                          }}
+                          sx={{ "& input": { padding: "5px 10px" } }}
+                        />
+                      </ListItemText>
+                    </ListItem>
+                    <ListItem>
+                      <ListItemText primary="District" />
+                      <ListItemText sx={{ textAlign: "end" }}>
+                        <TextField
+                          value={userDetails.userDistrict}
+                          name="userDistrict"
+                          error={!!errors.userDistrict}
+                          helperText={errors.userDistrict}
+                          onChange={(e) => {
+                            onChange(e);
+                          }}
+                          sx={{ "& input": { padding: "5px 10px" } }}
+                        />
+                      </ListItemText>
+                    </ListItem>
+                    <ListItem>
+                      <ListItemText primary="State" />
+                      <ListItemText sx={{ textAlign: "end" }}>
+                        <TextField
+                          value={userDetails.userState}
+                          name="userState"
+                          error={!!errors.userState}
+                          helperText={errors.userState}
+                          onChange={(e) => {
+                            onChange(e);
+                          }}
+                          sx={{ "& input": { padding: "5px 10px" } }}
+                        />
+                      </ListItemText>
+                    </ListItem>
+                    <Box sx={{ display: "flex", width: "100%" }}>
+                      <ListItem sx={{ display: "flex", width: "50%" }}>
+                        <ListItemText primary="Country" sx={{ width: "40%" }} />
+                        <ListItemText sx={{ textAlign: "end", width: "60%" }}>
+                          <TextField
+                            value={userDetails.userCountry}
+                            name="userCountry"
+                            error={!!errors.userCountry}
+                            helperText={errors.userCountry}
+                            onChange={(e) => {
+                              onChange(e);
+                            }}
+                            sx={{ "& input": { padding: "5px 10px" } }}
+                          />
+                        </ListItemText>
+                      </ListItem>
+                      <ListItem sx={{ display: "flex", width: "50%" }}>
+                        <ListItemText
+                          primary="Zip Code"
+                          sx={{ width: "50%" }}
+                        />
+                        <ListItemText sx={{ textAlign: "end", width: "50%" }}>
+                          <TextField
+                            value={userDetails.userZipCode}
+                            name="userZipCode"
+                            error={!!errors.userZipCode}
+                            helperText={errors.userZipCode}
+                            onChange={(e) => {
+                              onChange(e);
+                            }}
+                            sx={{ "& input": { padding: "5px 10px" } }}
+                          />
+                        </ListItemText>
+                      </ListItem>
+                    </Box>
+                  </List>
+                </Box>
+              </Box>
+              <Box
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  gap: 15,
+                  marginTop: "2rem",
+                }}
+              >
+                <Button
+                  disabled={!resetFlag}
+                  variant="contained"
+                  onClick={() => {
+                    Reset();
+                  }}
+                  color="error"
+                  sx={{ fontWeight: "600", "&:hover": { color: "gold" } }}
+                >
+                  Reset
+                </Button>
+                <Button
+                  disabled={!saveFlag}
+                  variant="contained"
+                  onClick={() => {
+                    Save();
+                  }}
+                  sx={{ fontWeight: "600", "&:hover": { color: "gold" } }}
+                >
+                  Save
+                </Button>
+              </Box>
             </Box>
-          </Box>
-        </div>
-      </Card>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          gap: 15,
-        }}
-      >
-        <Button
-          disabled={!resetFlag}
-          variant="contained"
-          onClick={() => {
-            Reset();
-          }}
-          color="error"
-          sx={{ fontWeight: "600", "&:hover": { color: "gold" } }}
-        >
-          Reset
-        </Button>
-        <Button
-          disabled={!saveFlag}
-          variant="contained"
-          onClick={() => {
-            Save();
-          }}
-          sx={{ fontWeight: "600", "&:hover": { color: "gold" } }}
-        >
-          Save
-        </Button>
-      </div>
-    </Box>
+          </Card>
+        </Box>
+      </Box>
+    </ThemeProvider>
   );
 };
 

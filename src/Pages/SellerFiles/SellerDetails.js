@@ -5,17 +5,14 @@ import {
   CardContent,
   Typography,
   CardMedia,
-  Divider,
   Icon,
   Tab,
   Tabs,
   Paper,
   List,
-  ListItem,
   ListSubheader,
   ListItemButton,
   ListItemText,
-  ListItemIcon,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import React, { useEffect, useState } from "react";
@@ -23,18 +20,13 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import Navbar from "../HeaderFiles/Navbar";
 import Category from "../HomeLayouts/Category";
-import ImageSlider from "../ImageSlider";
 import Collapse from "@mui/material/Collapse";
-import InboxIcon from "@mui/icons-material/MoveToInbox";
-import DraftsIcon from "@mui/icons-material/Drafts";
-import SendIcon from "@mui/icons-material/Send";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import PersonIcon from "@mui/icons-material/Person";
 import CallIcon from "@mui/icons-material/Call";
 import EmailIcon from "@mui/icons-material/Email";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
-import StarBorder from "@mui/icons-material/StarBorder";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Loading from "../Loading";
@@ -50,12 +42,6 @@ const SellerDetails = () => {
   const [loading, setLoading] = useState(true);
   const { currentUser } = useSelector((state) => state.user);
   const [activeTab, setActiveTab] = useState(0);
-  const images = [
-    "https://images.pexels.com/photos/135620/pexels-photo-135620.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-    "https://images.pexels.com/photos/264636/pexels-photo-264636.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-    "https://images.pexels.com/photos/2079438/pexels-photo-2079438.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-    "https://images.pexels.com/photos/2159074/pexels-photo-2159074.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-  ];
   const [open, setOpen] = React.useState(true);
 
   const handleClick = () => {
@@ -166,11 +152,11 @@ const SellerDetails = () => {
       <Navbar />
       <Category />
       <Icon
-        style={{
+        sx={{
           cursor: "pointer",
-          padding: "1.5rem",
-          marginLeft: "1rem",
+          marginLeft: "1.5rem",
           marginBottom: "0.5rem",
+          marginTop: "1rem",
           color: "black",
         }}
         onClick={() => navigate(-1)}
@@ -184,7 +170,7 @@ const SellerDetails = () => {
           backgroundColor: "white",
           padding: "20px",
           height: "80vh",
-          width: "90vw",
+          width: "93vw",
           margin: "0 auto",
           gap: 2,
         }}
@@ -209,8 +195,12 @@ const SellerDetails = () => {
                   marginRight: "1rem",
                   flex: "10%",
                 }}
-                image={selectedSeller?.sellerAvatar}
-                alt={selectedSeller?.sellerName}
+                image={`data:${
+                  selectedSeller?.sellerAvatar?.mimetype
+                };base64,${selectedSeller?.sellerAvatar?.buffer?.toString(
+                  "base64"
+                )}`}
+                alt={selectedSeller?.sellerShop}
               />
               <Box
                 sx={{
@@ -218,7 +208,7 @@ const SellerDetails = () => {
                 }}
               >
                 <Typography sx={{ fontSize: "200%" }}>
-                  {selectedSeller.sellerName}
+                  {selectedSeller.sellerShop}
                 </Typography>
                 <Typography sx={{ fontSize: "100%" }}>
                   {`${selectedSeller?.sellerDoor}, ${selectedSeller?.sellerStreet}, ${selectedSeller?.sellerCity}, `}
@@ -284,20 +274,6 @@ const SellerDetails = () => {
                 },
               }}
             >
-              {/* <Tab
-                label="Home"
-                sx={{
-                  color: "black",
-                  fontWeight: "600",
-                  width: "15%",
-                  "&.Mui-selected": {
-                    color: "white",
-                  },
-                  backgroundColor:
-                    activeTab === 0 ? "darkgoldenrod" : "transparent",
-                }}
-                onClick={() => setActiveTab(0)}
-              /> */}
               <Tab
                 label="Our Products"
                 sx={{
@@ -341,37 +317,6 @@ const SellerDetails = () => {
                 onClick={() => setActiveTab(2)}
               />
             </Tabs>
-            {/* {activeTab === 0 && (
-              <Box>
-                <Box
-                  sx={{
-                    padding: "1rem 0",
-                  }}
-                >
-                  <ImageSlider images={images} />
-                </Box>
-                <Box>
-                  <Typography
-                    sx={{
-                      textAlign: "center",
-                      margin: "1.5rem 0 0.5rem 0",
-                      fontSize: "100%",
-                      fontWeight: "600",
-                    }}
-                  >
-                    {" "}
-                    ABOUT US{" "}
-                  </Typography>
-                  <Typography>
-                    To adjust the position of the custom arrows in the
-                    ImageSlider component, you can set the position of the
-                    arrows relative to the slider itself. Here's how you can
-                    modify the position of the arrows to appear on the sides of
-                    the slider
-                  </Typography>
-                </Box>
-              </Box>
-            )} */}
             {activeTab === 0 && (
               <Box
                 sx={{
@@ -450,87 +395,107 @@ const SellerDetails = () => {
                     }}
                   >
                     {selectedCategoryProducts.map((product, index) => (
-                      <Card
+                      <Box
                         key={product._id}
                         onClick={() => {
                           openProductDetails(product);
                         }}
                         sx={{
-                          maxWidth: "25%",
-                          margin: "1px 0",
-                          flex: "1 0 auto",
-                          cursor: "pointer",
+                          margin: "-0.5rem",
                           "&:hover": {
-                            transform: "scale(1.005)",
-                            transition: "transform 0.1s ease-in-out",
+                            boxShadow: "0px 0px 30px rgba(0, 0, 0, 0.1)",
+                            transition: "boxShadow 0.1s ease-in-out",
                           },
                         }}
                       >
-                        <CardMedia
+                        <Box
                           sx={{
-                            width: "100%",
-                            backgroundSize: "contain",
-                            marginTop: "7.5px",
-                            padding: "0px",
-                          }}
-                          component="img"
-                          image={
-                            product.productImage?.buffer
-                              ? `data:${
-                                  product.productImage.mimetype
-                                };base64,${product.productImage.buffer.toString(
-                                  "base64"
-                                )}`
-                              : ""
-                          }
-                          title={product.productName}
-                        />
-                        <CardContent
-                          sx={{
-                            padding: "0 20px",
-                            paddingTop: "10px",
-                            "&.MuiCardContent-root:last-child": {
-                              paddingBottom: "10px",
-                              minHeight: "calc(50% - 1rem)",
-                            },
+                            width: "200px",
+                            height: "fit-content",
+                            maxHeight: "325px",
+                            cursor: "pointer",
+                            margin: "1rem",
                           }}
                         >
-                          <Typography
-                            variant="h5"
-                            component="div"
+                          <CardMedia
                             sx={{
-                              textTransform: "none",
-                              fontSize: "100%",
-                              textAlign: "center",
+                              height: "200px",
+                              backgroundSize: "contain",
+                              marginTop: "7.5px",
+                              padding: "0px",
+                            }}
+                            component="img"
+                            image={
+                              product.productImage?.buffer
+                                ? `data:${
+                                    product.productImage.mimetype
+                                  };base64,${product.productImage.buffer.toString(
+                                    "base64"
+                                  )}`
+                                : ""
+                            }
+                            title={product.productName}
+                          />
+                          <CardContent
+                            sx={{
+                              padding: "0 20px",
+                              paddingTop: "10px",
+                              "&.MuiCardContent-root:last-child": {
+                                paddingBottom: "10px",
+                                minHeight: "calc(50% - 1rem)",
+                              },
                             }}
                           >
-                            {product.productName}
-                          </Typography>
-                          <Typography
-                            gutterBottom
-                            variant="body2"
-                            color="text.secondary"
-                            sx={{
-                              textAlign: "center",
-                              textTransform: "none",
-                              fontSize: "100%",
-                            }}
-                          >
-                            {product.productCategory}
-                          </Typography>
-                          <Typography
-                            variant="h6"
-                            component="div"
-                            sx={{
-                              textAlign: "center",
-                              textTransform: "none",
-                              fontSize: "100%",
-                            }}
-                          >
-                            Rs. {product.productPrice}/-
-                          </Typography>
-                        </CardContent>
-                      </Card>
+                            <Typography
+                              component="div"
+                              fontSize="16px"
+                              sx={{
+                                textAlign: "left",
+                                textTransform: "none",
+                                display: "-webkit-box",
+                                WebkitBoxOrient: "vertical",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                WebkitLineClamp: 2,
+                                lineClamp: 2,
+                              }}
+                            >
+                              {product.productName}
+                            </Typography>
+                            <Typography
+                              gutterBottom
+                              variant="body2"
+                              color="text.secondary"
+                              sx={{
+                                textAlign: "left",
+                                textTransform: "none",
+                                margin: "0.2rem 0",
+                                display: "-webkit-box",
+                                WebkitBoxOrient: "vertical",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                WebkitLineClamp: 2,
+                                lineClamp: 2,
+                              }}
+                            >
+                              {product.productCategory}
+                            </Typography>
+                            <Typography
+                              variant="h6"
+                              component="div"
+                              sx={{
+                                textAlign: "left",
+                                textTransform: "none",
+                                marginTop: "0.5rem",
+                              }}
+                            >
+                              <b style={{ fontSize: "16px" }}>
+                                ₹ {product.productPrice}/-
+                              </b>
+                            </Typography>
+                          </CardContent>
+                        </Box>
+                      </Box>
                     ))}
                   </Box>
                 </Box>
@@ -555,11 +520,8 @@ const SellerDetails = () => {
                   </Typography>
                   <Typography>
                     {" "}
-                    To adjust the position of the custom arrows in the
-                    ImageSlider component, you can set the position of the
-                    arrows relative to the slider itself. Here's how you can
-                    modify the position of the arrows to appear on the sides of
-                    the slider
+                    Welcome to our {selectedSeller?.sellerShop} details page.
+                    Contact us for more info...
                   </Typography>
                 </Box>
               </>

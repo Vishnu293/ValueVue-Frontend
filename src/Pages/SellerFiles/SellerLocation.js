@@ -4,14 +4,14 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import Navbar from "../HeaderFiles/Navbar";
 import Category from "../HomeLayouts/Category";
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Loading from "../Loading";
+import Source from "../../Assets/source.png";
+import Destination from "../../Assets/destination.png";
 
-const GOOGLE_MAPS_API_KEY = "AIzaSyC-7H1dWirXia_4m4I2drN1ID9SVFIE3Sk";
-//AIzaSyC-7H1dWirXia_4m4I2drN1ID9SVFIE3Sk
-//AIzaSyCNAFWcEGz59qyWo9-UU2VhDVriQJdpDlM
+const MAPS_KEY = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
 
 const SellerLocation = () => {
   const navigate = useNavigate();
@@ -23,25 +23,29 @@ const SellerLocation = () => {
   const [dlng, setDlng] = useState(0);
   const [dlat, setDlat] = useState(0);
   const [loading, setLoading] = useState(true);
-  
+
   const getSingleSeller = async () => {
     try {
       const singleSellerUrl = `http://localhost:8080/seller/get/${sellerid}`;
       const response = await axios.get(singleSellerUrl);
       setSelectedSeller(response.data);
 
-    if (Array.isArray(response?.data?.sellerCords)) {
-      setDlat(response?.data?.sellerCords[0]);
-      setDlng(response?.data?.sellerCords[1]);
-    } else if (response?.data?.sellerCords && response?.data?.sellerCords.lat && response?.data?.sellerCords.lng) {
-      setDlat(response?.data?.sellerCords.lat);
-      setDlng(response?.data?.sellerCords.lng);
-    } else {
-      console.error("Invalid coordinates format for seller:", response.data);
-    }
+      if (Array.isArray(response?.data?.sellerCords)) {
+        setDlat(response?.data?.sellerCords[0]);
+        setDlng(response?.data?.sellerCords[1]);
+      } else if (
+        response?.data?.sellerCords &&
+        response?.data?.sellerCords.lat &&
+        response?.data?.sellerCords.lng
+      ) {
+        setDlat(response?.data?.sellerCords.lat);
+        setDlng(response?.data?.sellerCords.lng);
+      } else {
+        console.error("Invalid coordinates format for seller:", response.data);
+      }
       console.log(response);
-      console.log(lat)
-      console.log(lng)
+      console.log(lat);
+      console.log(lng);
     } catch (error) {
       console.error("Error fetching single product:", error);
       throw error;
@@ -57,26 +61,26 @@ const SellerLocation = () => {
   const directionsRenderer = new window.google.maps.DirectionsRenderer();
 
   const fetchData = async () => {
-    console.log("current location", typeof(lat), lng, description)
+    console.log("current location", typeof lat, lng, description);
     try {
       await axios.get(
-        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${GOOGLE_MAPS_API_KEY}`
+        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${MAPS_KEY}`
       );
-      if (typeof lat === 'number' && typeof lng === 'number') {
-      showMap(lng, lat);
-      setLoading(false)
-    } else {
-      console.error("Invalid latitude or longitude values");
-      setLoading(false)
-    }
-  } catch (error) {
+      if (typeof lat === "number" && typeof lng === "number") {
+        showMap(lng, lat);
+        setLoading(false);
+      } else {
+        console.error("Invalid latitude or longitude values");
+        setLoading(false);
+      }
+    } catch (error) {
       console.error("Error fetching location data:", error);
-      setLoading(false)
+      setLoading(false);
     }
   };
 
   useEffect(() => {
-    if(selectedSeller !== ""){
+    if (selectedSeller !== "") {
       fetchData();
     }
   }, [selectedSeller]);
@@ -87,28 +91,42 @@ const SellerLocation = () => {
         zoom: 15,
         mapTypeId: window.google.maps.MapTypeId.ROADMAP,
       });
+      const customMarkerIcon1 = {
+        url: Source,
+        scaledSize: new window.google.maps.Size(40, 40),
+      };
+      const customMarkerIcon2 = {
+        url: Destination,
+        scaledSize: new window.google.maps.Size(40, 40),
+      };
       const sourceMarker = new window.google.maps.Marker({
         position: { lat, lng },
         map: map,
-        label: "Source",
+        icon: customMarkerIcon1,
+        label: {
+          text: "You",
+          color: "black",
+          fontWeight: "bold",
+          fontSize: "14px",
+          anchor: new window.google.maps.Point(0, -20),
+        },
       });
       const destinationMarker = new window.google.maps.Marker({
         position: { lat: dlat, lng: dlng },
         map: map,
-        label: "Destination",
+        icon: customMarkerIcon2,
+        label: {
+          text: selectedSeller.sellerShop,
+          color: "black",
+          fontWeight: "bold",
+          fontSize: "14px",
+          anchor: new window.google.maps.Point(0, -20),
+        },
       });
 
       const bounds = new window.google.maps.LatLngBounds();
       bounds.extend(sourceMarker.getPosition());
       bounds.extend(destinationMarker.getPosition());
-
-      map.fitBounds(bounds);
-
-      const maxZoom = 15;
-      const zoom = map.getZoom();
-      if (zoom > maxZoom) {
-        map.setZoom(maxZoom);
-      }
 
       const request = {
         origin: { lat, lng },
@@ -118,8 +136,52 @@ const SellerLocation = () => {
 
       directionsService.route(request, (result, status) => {
         if (status === window.google.maps.DirectionsStatus.OK) {
-          directionsRenderer.setMap(map);
-          directionsRenderer.setDirections(result);
+          result.routes.forEach((route, index) => {
+            const routePath = new window.google.maps.Polyline({
+              path: route.overview_path,
+              geodesic: true,
+              strokeOpacity: 1.0,
+              strokeWeight: 3,
+            });
+            routePath.setMap(map);
+
+            const midPointIndex = Math.floor(route.overview_path.length / 2);
+            const midPoint = route.overview_path[midPointIndex];
+
+            const distanceService =
+              new window.google.maps.DistanceMatrixService();
+            const origin = new window.google.maps.LatLng(lat, lng);
+            const destination = new window.google.maps.LatLng(dlat, dlng);
+            distanceService.getDistanceMatrix(
+              {
+                origins: [origin],
+                destinations: [destination],
+                travelMode: window.google.maps.TravelMode.DRIVING,
+              },
+              (response, status) => {
+                if (status === "OK") {
+                  const distance = response.rows[0].elements[0].distance.text;
+                  const duration = response.rows[0].elements[0].duration.text;
+
+                  const infowindow = new window.google.maps.InfoWindow({
+                    content: `<b>Shortest Route<div>Time: ${duration}</div><div>Distance: ${distance}</div></b>`,
+                  });
+                  infowindow.setPosition(midPoint);
+                  infowindow.open(map);
+                } else {
+                  console.error("Error getting distance and duration:", status);
+                }
+              }
+            );
+          });
+
+          map.fitBounds(bounds);
+
+          const maxZoom = 15;
+          const zoom = map.getZoom();
+          if (zoom > maxZoom) {
+            map.setZoom(maxZoom);
+          }
         } else {
           console.error("Error getting directions:", status);
         }
@@ -133,17 +195,27 @@ const SellerLocation = () => {
     <Box>
       <Navbar />
       <Category />
-      <Icon style={{ cursor: 'pointer', padding: '1.5rem', marginLeft: '1rem',  marginBottom: '0.5rem',color: "black"}} onClick={() => navigate(-1)}><ArrowBackIcon/></Icon>
-      {loading && <Loading/>}
+      <Icon
+        sx={{
+          cursor: "pointer",
+          marginLeft: "1.5rem",
+          marginBottom: "0.5rem",
+          marginTop: "1rem",
+          color: "black",
+        }}
+        onClick={() => navigate(-1)}
+      >
+        <ArrowBackIcon />
+      </Icon>
+      {loading && <Loading />}
       <Card
         id="map"
         sx={{
           margin: "0 auto",
           height: "80vh",
-          width: "90vw",
+          width: "93vw",
         }}
-      >
-      </Card>
+      ></Card>
     </Box>
   );
 };

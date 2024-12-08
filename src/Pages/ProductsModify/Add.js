@@ -33,6 +33,7 @@ const Add = () => {
     productPrice: "",
     productCategory: "",
     productDesc: "",
+    productStock: "",
     productImage: null,
     sellerId: currentSeller.data._id,
     productFeatures: {},
@@ -120,10 +121,9 @@ const Add = () => {
     const formData = new FormData();
     for (const [key, value] of Object.entries(productData)) {
       if (key === "productFeatures" || key === "customFeatures") {
-        // Convert productFeatures and customFeatures to JSON strings
         formData.append(key, JSON.stringify(value));
       } else if (key === "productImage") {
-        formData.append(key, value); // Append the file directly
+        formData.append(key, value);
       } else {
         formData.append(key, value);
       }
@@ -184,6 +184,11 @@ const Add = () => {
         return (
           <>
             <TextField
+              label="Brand"
+              onChange={(e) => onFeatureChange(e, "Brand")}
+              fullWidth
+            />
+            <TextField
               label="Ingredients"
               onChange={(e) => onFeatureChange(e, "Ingredients")}
               fullWidth
@@ -203,16 +208,16 @@ const Add = () => {
               onChange={(e) => onFeatureChange(e, "PackagingType")}
               fullWidth
             />
-            <TextField
-              label="Certifications"
-              onChange={(e) => onFeatureChange(e, "Certifications")}
-              fullWidth
-            />
           </>
         );
       case "Beauty and Personal Care":
         return (
           <>
+            <TextField
+              label="Brand"
+              onChange={(e) => onFeatureChange(e, "Brand")}
+              fullWidth
+            />
             <TextField
               label="Ingredients"
               onChange={(e) => onFeatureChange(e, "Ingredients")}
@@ -233,16 +238,16 @@ const Add = () => {
               onChange={(e) => onFeatureChange(e, "SafetyInformation")}
               fullWidth
             />
-            <TextField
-              label="Product Benefits"
-              onChange={(e) => onFeatureChange(e, "ProductBenefits")}
-              fullWidth
-            />
           </>
         );
       case "Health and Wellness":
         return (
           <>
+            <TextField
+              label="Brand"
+              onChange={(e) => onFeatureChange(e, "Brand")}
+              fullWidth
+            />
             <TextField
               label="Ingredients"
               onChange={(e) => onFeatureChange(e, "Ingredients")}
@@ -263,16 +268,16 @@ const Add = () => {
               onChange={(e) => onFeatureChange(e, "SafetyInformation")}
               fullWidth
             />
-            <TextField
-              label="Product Benefits"
-              onChange={(e) => onFeatureChange(e, "ProductBenefits")}
-              fullWidth
-            />
           </>
         );
       case "Office and Stationery":
         return (
           <>
+            <TextField
+              label="Brand"
+              onChange={(e) => onFeatureChange(e, "Brand")}
+              fullWidth
+            />
             <TextField
               label="Material Type"
               onChange={(e) => onFeatureChange(e, "MaterialType")}
@@ -293,16 +298,16 @@ const Add = () => {
               onChange={(e) => onFeatureChange(e, "Durability")}
               fullWidth
             />
-            <TextField
-              label="Packaging Type"
-              onChange={(e) => onFeatureChange(e, "PackagingType")}
-              fullWidth
-            />
           </>
         );
       case "Others":
         return (
           <>
+            <TextField
+              label="Brand"
+              onChange={(e) => onFeatureChange(e, "Brand")}
+              fullWidth
+            />
             <TextField
               label="Dimensions"
               onChange={(e) => onFeatureChange(e, "Dimensions")}
@@ -321,11 +326,6 @@ const Add = () => {
             <TextField
               label="Safety Information"
               onChange={(e) => onFeatureChange(e, "SafetyInformation")}
-              fullWidth
-            />
-            <TextField
-              label="Warranty Information"
-              onChange={(e) => onFeatureChange(e, "WarrantyInformation")}
               fullWidth
             />
           </>
@@ -423,16 +423,50 @@ const Add = () => {
               name="productName"
               onChange={onChange}
               fullWidth
+              required
             />
-            <TextField
-              id="productPrice"
-              label="Product Price"
-              variant="outlined"
-              value={productData.productPrice}
-              name="productPrice"
-              onChange={onChange}
-              fullWidth
-            />
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                gap: 2,
+              }}
+            >
+              <TextField
+                id="productPrice"
+                label="Price(Only in Numbers)"
+                variant="outlined"
+                value={productData.productPrice}
+                name="productPrice"
+                onChange={onChange}
+                fullWidth
+                sx={{ flexBasis: "50%" }}
+                required
+              />
+              <FormControl
+                variant="outlined"
+                fullWidth
+                sx={{
+                  flexBasis: "50%",
+                }}
+              >
+                <InputLabel id="productStockLabel">Product Stock</InputLabel>
+                <Select
+                  labelId="productStockLabel"
+                  id="productStock"
+                  label="Stock Available"
+                  value={productData.productStock}
+                  name="productStock"
+                  onChange={onChange}
+                  required
+                >
+                  <MenuItem value="In Stock">In Stock</MenuItem>
+                  <MenuItem value="Low in Stock">Low in Stock</MenuItem>
+                  <MenuItem value="Out of Stock">Out of Stock</MenuItem>
+                </Select>
+              </FormControl>
+            </Box>
             <TextField
               multiline
               rows={2}
@@ -442,6 +476,7 @@ const Add = () => {
               value={productData.productDesc}
               name="productDesc"
               onChange={onChange}
+              required
             />
             <FormControl
               variant="outlined"
@@ -457,6 +492,7 @@ const Add = () => {
                 value={productData.productCategory}
                 name="productCategory"
                 onChange={onChange}
+                required
               >
                 <MenuItem value={"Electronics"}>Electronics</MenuItem>
                 <MenuItem value={"Grocery and Food"}>Grocery and Food</MenuItem>
@@ -473,14 +509,17 @@ const Add = () => {
               </Select>
             </FormControl>
             <FormControl fullWidth>
-              <FormHelperText sx={{ textAlign: "center" }}>
-                Select an Image file
+              <FormHelperText
+                sx={{ textAlign: "center", marginBottom: "0.5rem" }}
+              >
+                Select an Image file*
               </FormHelperText>
               <Input
                 id="file-upload"
                 type="file"
                 accept="image/*"
                 name="productImage"
+                required
                 onChange={onImageChange}
                 endAdornment={
                   <InputAdornment position="end">
@@ -501,7 +540,6 @@ const Add = () => {
             }}
           >
             <Typography sx={{ textAlign: "left" }}>Add Features:</Typography>
-            {/* Rendering additional feature inputs based on the selected category */}
             {renderFeatureInputs()}
           </Box>
           <Box
@@ -511,7 +549,6 @@ const Add = () => {
               flexBasis: "calc(100% / 3)",
             }}
           >
-            {/* Custom feature inputs */}
             <Typography sx={{ textAlign: "left", paddingBottom: "1rem" }}>
               Custom Features:
             </Typography>
@@ -523,7 +560,6 @@ const Add = () => {
                 width: "100%",
               }}
             >
-              {/* Render custom features */}
               {renderCustomFeatures()}
               <IconButton onClick={addCustomFeature}>
                 <AddIcon />

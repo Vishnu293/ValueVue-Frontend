@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { ThemeProvider } from "@mui/material/styles";
+import { lightTheme, darkTheme } from "../MyTheme";
 import { Fab } from "@mui/material";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 
@@ -39,31 +41,42 @@ const Backtotop = () => {
 
     return (
       <>
-        {visible && (
-          <div
-            className={`scroll-to-top ${className}`}
-            onClick={() => scrollToTop(smooth)}
-            {...props}
-          >
-            {component || (
-              <Fab
-                color="primary"
-                aria-label="totop"
-                sx={{
-                  position: "fixed",
-                  bottom: "40px",
-                  right: "40px",
-                  zIndex: "2",
-                  "&:active": {
-                    transform: "scale(0.95)",
-                  },
-                }}
-              >
-                <KeyboardArrowUpIcon sx={{color:"gold"}}/>
-              </Fab>
-            )}
-          </div>
-        )}
+        <ThemeProvider theme={lightTheme}>
+          {visible && (
+            <div
+              className={`scroll-to-top ${className}`}
+              onClick={() => scrollToTop(smooth)}
+              {...props}
+            >
+              {component || (
+                <Fab
+                  color="primary"
+                  aria-label="totop"
+                  disableRipple
+                  sx={{
+                    position: "fixed",
+                    bottom: "40px",
+                    right: "40px",
+                    zIndex: "2",
+                    "&:active": {
+                      transform: "scale(0.95)",
+                    },
+                    "&: hover": {
+                      backgroundColor: (theme) => theme.palette.primary.dark,
+                      color: (theme) => theme.palette.secondary.main,
+                    },
+                  }}
+                >
+                  <KeyboardArrowUpIcon
+                    sx={{
+                      fontSize: "30px",
+                    }}
+                  />
+                </Fab>
+              )}
+            </div>
+          )}
+        </ThemeProvider>
       </>
     );
   };
@@ -72,4 +85,5 @@ const Backtotop = () => {
 
   return <ScrollToTop smooth={isSmoothScrollSupported} />;
 };
+
 export default Backtotop;

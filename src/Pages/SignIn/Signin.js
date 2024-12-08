@@ -2,18 +2,16 @@ import React, { useState, useEffect, useRef } from "react";
 import {
   Box,
   Button,
-  Card,
-  Divider,
   Grid,
   TextField,
-  Icon,
   Typography,
   InputAdornment,
   IconButton,
 } from "@mui/material";
+import { ThemeProvider } from "@mui/material/styles";
+import { lightTheme, darkTheme } from "../MyTheme";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import axios from "axios";
-import Swal from "sweetalert2";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useNavigate } from "react-router";
@@ -24,12 +22,14 @@ import {
   signInFailure,
 } from "../../redux/user/userSlice.js";
 import { selectLocation } from "../../redux/location/locationSlice.js";
+import Cookies from "js-cookie";
 
 const Signin = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const inputRef = useRef(null);
   const { loading, error } = useSelector((state) => state.user);
+  const [errorMessage, setErrorMessage] = useState(null);
 
   const formik = useFormik({
     initialValues: {
@@ -44,48 +44,40 @@ const Signin = () => {
     }),
   });
 
-  // const [formData, setFormData] = useState({
-  //   userEmail: "",
-  //   userPassword: "",
-  // });
-
-  // const onChange = (e) => {
-  //   setFormData({ ...formData, [e.target.name]: e.target.value });
-  // };
-  
   const signIn = (values) => {
     dispatch(signInStart());
     axios
       .post("http://localhost:8080/user/get", values)
       .then((response) => {
-        Swal.fire({
-          title: "SignIn Successful!",
-          icon: "success",
-          confirmButtonText: "OK",
-        });
         if (response.success === false) {
           dispatch(signInFailure(response.message));
           return;
         }
         dispatch(signInSuccess(response));
-        console.log(response?.data?.userCity);
-        console.log(response?.data);
-        console.log(response?.data?.userCords[0]);
         const location = {
           description: response?.data?.userCity,
-          lat: response?.data?.userCords.lat,
-          lng: response?.data?.userCords.lng,
+          lat:
+            response?.data?.userCords.lat !== null &&
+            response?.data?.userCords.lat !== undefined
+              ? response?.data?.userCords.lat
+              : response?.data?.userCords[0],
+          lng:
+            response?.data?.userCords.lng !== null &&
+            response?.data?.userCords.lng !== undefined
+              ? response?.data?.userCords.lng
+              : response?.data?.userCords[1],
         };
         dispatch(selectLocation(location));
+        Cookies.set("login", true, { expires: 7 });
         navigate("/");
       })
-      .catch((err) => {
-        dispatch(signInFailure(err.message));
-        Swal.fire({
-          title: "SignIn Failed!",
-          icon: "error",
-          confirmButtonText: "OK",
-        });
+      .catch((error) => {
+        if (error.response.status === 404) {
+          setErrorMessage(error.response.data.message);
+        } else {
+          setErrorMessage("An error occurred. Please try again.");
+        }
+        console.error("Sign in error:", error);
       });
   };
 
@@ -96,95 +88,103 @@ const Signin = () => {
   }, [inputRef]);
 
   return (
-    <Box>
-      <Grid
-        container
-        spacing={3}
-        alignItems="center"
-        justifyContent="flex-start"
-        sx={{
-          height: "100%",
-          width: "80%",
-          margin: "5% auto",
-          textAlign: "center",
-        }}
-      >
-        <Grid item xs={12}>
-          <TextField
-            label="Email"
-            placeholder="Enter Your Email"
-            variant="standard"
-            helperText={formik.touched.userEmail && formik.errors.userEmail}
-            value={formik.values.userEmail}
-            style={{ width: "100%" }}
-            name="userEmail"
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            error={formik.touched.userEmail && Boolean(formik.errors.userEmail)}
-            required
-            inputRef={inputRef}
-          />
+    <ThemeProvider theme={lightTheme}>
+      <Box>
+        <Grid
+          container
+          spacing={3}
+          alignItems="center"
+          justifyContent="flex-start"
+          sx={{
+            height: "100%",
+            width: "80%",
+            margin: "5% auto",
+            textAlign: "center",
+          }}
+        >
+          <Grid item xs={12}>
+            <TextField
+              label="Email"
+              placeholder="Enter Your Email"
+              variant="standard"
+              helperText={formik.touched.userEmail && formik.errors.userEmail}
+              value={formik.values.userEmail}
+              style={{ width: "100%" }}
+              name="userEmail"
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={
+                formik.touched.userEmail && Boolean(formik.errors.userEmail)
+              }
+              required
+              inputRef={inputRef}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              label="Password"
+              placeholder="Enter Your Password"
+              type={formik.values.showPassword ? "text" : "password"}
+              variant="standard"
+              helperText={
+                formik.touched.userPassword && formik.errors.userPassword
+              }
+              value={formik.values.userPassword}
+              style={{ width: "100%" }}
+              name="userPassword"
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={
+                formik.touched.userPassword &&
+                Boolean(formik.errors.userPassword)
+              }
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={() =>
+                        formik.setValues({
+                          ...formik.values,
+                          showPassword: !formik.values.showPassword,
+                        })
+                      }
+                      edge="end"
+                    >
+                      {formik.values.showPassword ? (
+                        <VisibilityOff sx={{ fontSize: "20px" }} />
+                      ) : (
+                        <Visibility sx={{ fontSize: "20px" }} />
+                      )}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+              required
+            />
+          </Grid>
+          {errorMessage && (
+            <Grid item xs={12}>
+              <Typography variant="body2" color="error">
+                {errorMessage}
+              </Typography>
+            </Grid>
+          )}
+          <Grid item xs={12}>
+            <Button
+              variant="contained"
+              onClick={() => {
+                setErrorMessage(null);
+                signIn(formik.values);
+              }}
+              disabled={formik.isSubmitting}
+              sx={{ fontWeight: "600", "&:hover": { color: "gold" } }}
+            >
+              Sign In
+            </Button>
+          </Grid>
         </Grid>
-        <Grid item xs={12}>
-          <TextField
-            label="Password"
-            placeholder="Enter Your Password"
-            type={
-              formik.values.showPassword
-                ? "text"
-                : "password"
-            }
-            variant="standard"
-            helperText={
-              formik.touched.userPassword && formik.errors.userPassword
-            }
-            value={formik.values.userPassword}
-            style={{ width: "100%" }}
-            name="userPassword"
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            error={
-              formik.touched.userPassword &&
-              Boolean(formik.errors.userPassword)
-            }
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    onClick={() =>
-                      formik.setValues({
-                        ...formik.values,
-                        showPassword:
-                          !formik.values.showPassword,
-                      })
-                    }
-                    edge="end"
-                  >
-                    {formik.values.showPassword ? (
-                      <VisibilityOff />
-                    ) : (
-                      <Visibility />
-                    )}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-            required
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <Button
-            variant="contained"
-            onClick={() => {
-              signIn(formik.values);
-            }}
-            sx={{ fontWeight: "600", "&:hover": { color: "gold" } }}
-          >
-            Sign In
-          </Button>
-        </Grid>
-      </Grid>
-    </Box>
+      </Box>
+    </ThemeProvider>
   );
 };
 

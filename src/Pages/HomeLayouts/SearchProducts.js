@@ -5,7 +5,6 @@ import {
   CardMedia,
   CardContent,
   Typography,
-  Button,
   TextField,
   FormControl,
   InputLabel,
@@ -14,6 +13,8 @@ import {
   IconButton,
   Autocomplete,
 } from "@mui/material";
+import { ThemeProvider } from "@mui/material/styles";
+import { lightTheme, darkTheme } from "../MyTheme";
 import SearchIcon from "@mui/icons-material/Search";
 import { useNavigate } from "react-router";
 import { useLocation } from "react-router-dom";
@@ -40,6 +41,7 @@ const SearchProducts = ({ category }) => {
     "Health and Wellness",
     "Office and Stationery",
     "Others",
+    "All",
   ];
   const location = useLocation();
   const isHomePage = location.pathname === "/";
@@ -56,7 +58,13 @@ const SearchProducts = ({ category }) => {
   const getProducts = async () => {
     setLoading(true);
     await axios
-      .get(API)
+      .get(API, {
+        params: {
+          userLat: userLat,
+          userLng: userLng,
+          maxDistance: 50,
+        },
+      })
       .then((res) => {
         setProductsList(res.data);
         console.log(res);
@@ -68,6 +76,12 @@ const SearchProducts = ({ category }) => {
         setLoading(false);
       });
   };
+
+  useEffect(() => {
+    if (userLat !== null && userLng !== null) {
+      getProducts();
+    }
+  }, [userLat, userLng]);
 
   const getAutocompleteOptions = () => {
     if (searchName.trim() === "") {
@@ -92,12 +106,6 @@ const SearchProducts = ({ category }) => {
   };
 
   useEffect(() => {
-    if (userLat !== null && userLng !== null) {
-      getProducts();
-    }
-  }, [userLat, userLng]);
-
-  useEffect(() => {
     if (!isHomePage) {
       setSearchCategory(category);
     }
@@ -117,22 +125,39 @@ const SearchProducts = ({ category }) => {
   );
 
   const handleSearch = () => {
-    const modifiedSearchName = searchName.replace(/\s/g, "").toLowerCase();
+    let filtered;
 
-    const filtered = sortedProducts.filter((product) => {
-      const productNameWithoutSpaces = product.productName
-        .replace(/\s/g, "")
-        .toLowerCase();
+    if (searchCategory === "All") {
+      filtered = sortedProducts.filter((product) => {
+        const modifiedSearchName = searchName.replace(/\s/g, "").toLowerCase();
+        const productNameWithoutSpaces = product.productName
+          .replace(/\s/g, "")
+          .toLowerCase();
 
-      const nameMatch =
-        productNameWithoutSpaces.includes(modifiedSearchName) ||
-        modifiedSearchName === "";
+        const nameMatch =
+          productNameWithoutSpaces.includes(modifiedSearchName) ||
+          modifiedSearchName === "";
 
-      const categoryMatch =
-        product.productCategory === searchCategory || searchCategory === "";
+        return nameMatch;
+      });
+    } else {
+      filtered = sortedProducts.filter((product) => {
+        const modifiedSearchName = searchName.replace(/\s/g, "").toLowerCase();
+        const productNameWithoutSpaces = product.productName
+          .replace(/\s/g, "")
+          .toLowerCase();
 
-      return nameMatch && categoryMatch;
-    });
+        const nameMatch =
+          productNameWithoutSpaces.includes(modifiedSearchName) ||
+          modifiedSearchName === "";
+
+        const categoryMatch =
+          product.productCategory === searchCategory || searchCategory === "";
+
+        return nameMatch && categoryMatch;
+      });
+    }
+
     setFilteredProducts(filtered);
     setIsSearchInitiated(true);
   };
@@ -153,191 +178,357 @@ const SearchProducts = ({ category }) => {
     return null;
   }
 
-  return (
-    <Card
-      sx={{
-        backgroundColor: "white",
-        padding: "20px",
-        margin: "15px",
-        marginTop: "15px",
-      }}
-    >
-      <div style={{ display: "flex", justifyContent: "space-between" }}>
-        <h1 style={{ fontSize: "25px" }}>Search For Products</h1>
-      </div>
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: isHomePage ? "space-between" : "center",
-          gap: 50,
-          width: "80vw",
-          margin: "20px auto",
-        }}
-      >
-        <Autocomplete
-          options={autocompleteOptions}
-          value={searchName}
-          onChange={(event, newValue) => setSearchName(newValue)}
-          onInputChange={() => getAutocompleteOptions()}
-          disableClearable
-          freeSolo
-          autoHighlight={isAutoHighlightEnabled}
+  if (isSearchInitiated && filteredProducts.length === 0) {
+    return (
+      <ThemeProvider theme={lightTheme}>
+        <Card
           sx={{
-            width: isHomePage ? "40%" : "70%",
-            height: "99%",
-          }}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              id="filled-basic"
-              label="Search by Name"
-              variant="filled"
-              InputProps={{
-                ...params.InputProps,
-                disableUnderline: true,
-                endAdornment: (
-                  <IconButton
-                    onClick={handleSearch}
-                    sx={{
-                      padding: "0",
-                      marginLeft: "0",
-                      margin: "0",
-                      position: "absolute",
-                      right: "10px",
-                      top: "16px",
-                    }}
-                  >
-                    <SearchIcon />
-                  </IconButton>
-                ),
-              }}
-              onChange={(e) => setSearchName(e.target.value)}
-              onKeyPress={handleKeyPress}
-            />
-          )}
-        />
-        {isHomePage ? (
-          <FormControl
-            variant="outlined"
-            sx={{
-              width: "40%",
-            }}
-          >
-            <InputLabel id="productCategory">Search by Category</InputLabel>
-            <Select
-              labelId="productCategorySelect"
-              id="productCategorySelect"
-              label="Category"
-              variant="filled"
-              name="productCategory"
-              disableUnderline
-              value={searchCategory}
-              onChange={(e) => setSearchCategory(e.target.value)}
-              sx={{
-                width: "100%",
-              }}
-              onFocus={handleSelectBlur}
-              onKeyPress={handleKeyPress}
-            >
-              {menuItems.map((menuItem, menuItemIndex) => (
-                <MenuItem key={menuItemIndex} value={menuItem}>
-                  {menuItem}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        ) : null}
-      </div>
-      {isSearchInitiated && (
-        <Box
-          sx={{
-            display: "flex",
-            flexWrap: "wrap",
-            justifyContent: "space-evenly",
-            alignItems: "center",
+            backgroundColor: "white",
+            padding: "20px",
+            margin: "15px",
+            marginTop: "20px",
           }}
         >
-          {filteredProducts.map((productItem, productIndex) => {
-            const imageData = productItem.productImage?.buffer;
-            const dataUrl = imageData
-              ? `data:${
-                  productItem.productImage.mimetype
-                };base64,${imageData.toString("base64")}`
-              : null;
-            return (
-              <Button
-                key={productItem.productId}
-                onClick={() => {
-                  openProductDetails(productItem);
-                }}
+          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+            <Typography
+              variant="h1"
+              sx={{
+                fontSize: "1.5rem",
+                fontWeight: (theme) => theme.typography.fontWeightBold,
+              }}
+            >
+              Search for Products
+            </Typography>
+          </Box>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: isHomePage ? "space-between" : "center",
+              gap: 50,
+              width: "80vw",
+              margin: "20px auto",
+            }}
+          >
+            <Autocomplete
+              options={autocompleteOptions}
+              value={searchName}
+              onChange={(event, newValue) => setSearchName(newValue)}
+              onInputChange={() => getAutocompleteOptions()}
+              disableClearable
+              freeSolo
+              autoHighlight={isAutoHighlightEnabled}
+              sx={{
+                width: isHomePage ? "40%" : "70%",
+                height: "99%",
+              }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  id="filled-basic"
+                  label="Search by Name"
+                  variant="filled"
+                  InputProps={{
+                    ...params.InputProps,
+                    disableUnderline: true,
+                    endAdornment: (
+                      <IconButton
+                        onClick={handleSearch}
+                        sx={{
+                          padding: "0",
+                          marginLeft: "0",
+                          margin: "0",
+                          position: "absolute",
+                          right: "10px",
+                          top: "16px",
+                        }}
+                      >
+                        <SearchIcon sx={{ fontSize: "20px" }} />
+                      </IconButton>
+                    ),
+                  }}
+                  onChange={(e) => setSearchName(e.target.value)}
+                  onKeyUp={handleKeyPress}
+                />
+              )}
+            />
+            {isHomePage ? (
+              <FormControl
+                variant="outlined"
                 sx={{
-                  "&:hover": {
-                    transform: "scale(1.05)",
-                    transition: "transform 0.1s ease-in-out",
-                  },
+                  width: "40%",
                 }}
               >
-                <Card
+                <InputLabel id="productCategory">Search by Category</InputLabel>
+                <Select
+                  labelId="productCategorySelect"
+                  id="productCategorySelect"
+                  label="Category"
+                  variant="filled"
+                  name="productCategory"
+                  disableUnderline
+                  value={searchCategory}
+                  onChange={(e) => setSearchCategory(e.target.value)}
                   sx={{
-                    width: "250px",
-                    maxHeight: "400px",
-                    margin: "0.5rem",
-                    padding: "0 10px",
-                    cursor: "pointer",
+                    width: "100%",
+                  }}
+                  onFocus={handleSelectBlur}
+                  onKeyUp={handleKeyPress}
+                >
+                  <MenuItem value="">
+                    <em>None</em>
+                  </MenuItem>
+                  {menuItems.map((menuItem, menuItemIndex) => (
+                    <MenuItem key={menuItemIndex} value={menuItem}>
+                      {menuItem}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            ) : null}
+          </div>
+          <Box sx={{ textAlign: "center", margin: "1rem" }}>
+            <Typography
+              variant="caption"
+              sx={{
+                marginTop: 2,
+                color: "text.secondary",
+                textAlign: "center",
+              }}
+            >
+              No products found.
+            </Typography>
+          </Box>
+        </Card>
+      </ThemeProvider>
+    );
+  }
+
+  return (
+    <ThemeProvider theme={lightTheme}>
+      <Card
+        sx={{
+          backgroundColor: "white",
+          padding: "20px",
+          margin: "15px",
+          marginTop: "20px",
+        }}
+      >
+        <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+          <Typography
+            variant="h1"
+            sx={{
+              fontSize: "1.5rem",
+              fontWeight: (theme) => theme.typography.fontWeightBold,
+            }}
+          >
+            Search for Products
+          </Typography>
+        </Box>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: isHomePage ? "space-between" : "center",
+            gap: 50,
+            width: "80vw",
+            margin: "20px auto",
+          }}
+        >
+          <Autocomplete
+            options={autocompleteOptions}
+            value={searchName}
+            onChange={(event, newValue) => setSearchName(newValue)}
+            onInputChange={() => getAutocompleteOptions()}
+            disableClearable
+            freeSolo
+            autoHighlight={isAutoHighlightEnabled}
+            sx={{
+              width: isHomePage ? "40%" : "70%",
+              height: "99%",
+            }}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                id="filled-basic"
+                label="Search by Name"
+                variant="filled"
+                InputProps={{
+                  ...params.InputProps,
+                  disableUnderline: true,
+                  endAdornment: (
+                    <IconButton
+                      onClick={handleSearch}
+                      sx={{
+                        padding: "0",
+                        marginLeft: "0",
+                        margin: "0",
+                        position: "absolute",
+                        right: "10px",
+                        top: "16px",
+                      }}
+                    >
+                      <SearchIcon sx={{ fontSize: "20px" }} />
+                    </IconButton>
+                  ),
+                }}
+                onChange={(e) => setSearchName(e.target.value)}
+                onKeyUp={handleKeyPress}
+              />
+            )}
+          />
+          {isHomePage ? (
+            <FormControl
+              variant="outlined"
+              sx={{
+                width: "40%",
+              }}
+            >
+              <InputLabel id="productCategory">Search by Category</InputLabel>
+              <Select
+                labelId="productCategorySelect"
+                id="productCategorySelect"
+                label="Category"
+                variant="filled"
+                name="productCategory"
+                disableUnderline
+                value={searchCategory}
+                onChange={(e) => setSearchCategory(e.target.value)}
+                sx={{
+                  width: "100%",
+                }}
+                onFocus={handleSelectBlur}
+                onKeyUp={handleKeyPress}
+              >
+                <MenuItem value="">
+                  <em>None</em>
+                </MenuItem>
+                {menuItems.map((menuItem, menuItemIndex) => (
+                  <MenuItem key={menuItemIndex} value={menuItem}>
+                    {menuItem}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          ) : null}
+        </div>
+        {isSearchInitiated && (
+          <Box
+            sx={{
+              display: "flex",
+              flexWrap: "wrap",
+              width: "100%",
+              justifyContent: "flex-start",
+              margin: "2.5rem 1rem 1.5rem 1rem",
+              gap: 2,
+            }}
+          >
+            {filteredProducts.map((productItem, productIndex) => {
+              const imageData = productItem.productImage?.buffer;
+              const dataUrl = imageData
+                ? `data:${
+                    productItem.productImage.mimetype
+                  };base64,${imageData.toString("base64")}`
+                : null;
+              return (
+                <Box
+                  key={productItem.productId}
+                  onClick={() => {
+                    openProductDetails(productItem);
+                  }}
+                  sx={{
+                    margin: "-0.5rem",
+                    "&:hover": {
+                      boxShadow: "0px 0px 30px rgba(0, 0, 0, 0.1)",
+                      transition: "boxShadow 0.1s ease-in-out",
+                    },
                   }}
                 >
-                  <CardMedia
+                  <Box
                     sx={{
-                      height: "200px",
-                      backgroundSize: "contain",
-                      marginTop: "15px",
-                      padding: "0px",
-                    }}
-                    image={dataUrl}
-                    title={productItem.productName}
-                  />
-                  <CardContent
-                    sx={{
-                      padding: "0 20px",
-                      paddingTop: "10px",
-                      "&.MuiCardContent-root:last-child": {
-                        paddingBottom: "10px",
-                        minHeight: "150px",
-                      },
+                      width: "240px",
+                      height: "fit-content",
+                      maxHeight: "325px",
+                      cursor: "pointer",
                     }}
                   >
-                    <Typography
-                      variant="h5"
-                      component="div"
-                      sx={{ textTransform: "none" }}
+                    <CardMedia
+                      sx={{
+                        height: "200px",
+                        backgroundSize: "contain",
+                        marginTop: "15px",
+                        padding: "0px",
+                      }}
+                      image={dataUrl}
+                      title={productItem.productName}
+                    />
+                    <CardContent
+                      sx={{
+                        padding: "0 20px",
+                        paddingTop: "10px",
+                        "&.MuiCardContent-root:last-child": {
+                          paddingBottom: "10px",
+                          minHeight: "150px",
+                        },
+                      }}
                     >
-                      {productItem.productName}
-                    </Typography>
-                    <Typography
-                      gutterBottom
-                      variant="body2"
-                      color="text.secondary"
-                      sx={{ textAlign: "center", textTransform: "none" }}
-                    >
-                      {productItem.sellerId.sellerName} -{" "}
-                      {productItem.productCategory}
-                    </Typography>
-                    <Typography
-                      variant="h6"
-                      component="div"
-                      sx={{ textAlign: "center", textTransform: "none" }}
-                    >
-                      Rs. {productItem.productPrice}/-
-                    </Typography>
-                  </CardContent>
-                </Card>
-              </Button>
-            );
-          })}
-        </Box>
-      )}
-    </Card>
+                      <Typography
+                        component="div"
+                        fontSize="16px"
+                        sx={{
+                          textAlign: "left",
+                          textTransform: "none",
+                          display: "-webkit-box",
+                          WebkitBoxOrient: "vertical",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          WebkitLineClamp: 2,
+                          lineClamp: 2,
+                        }}
+                      >
+                        {productItem.productName}
+                      </Typography>
+                      <Typography
+                        gutterBottom
+                        variant="body2"
+                        color="text.secondary"
+                        fontSize="12px"
+                        sx={{
+                          textAlign: "left",
+                          textTransform: "none",
+                          margin: "0.2rem 0",
+                          display: "-webkit-box",
+                          WebkitBoxOrient: "vertical",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          WebkitLineClamp: 2,
+                          lineClamp: 2,
+                        }}
+                      >
+                        {productItem.productCategory}
+                      </Typography>
+                      <Typography
+                        variant="h6"
+                        component="div"
+                        sx={{
+                          textAlign: "left",
+                          textTransform: "none",
+                          marginTop: "0.5rem",
+                        }}
+                      >
+                        <b style={{ fontSize: "16px" }}>
+                          ₹ {productItem.productPrice}/-
+                        </b>
+                      </Typography>
+                    </CardContent>
+                  </Box>
+                </Box>
+              );
+            })}
+          </Box>
+        )}
+      </Card>
+    </ThemeProvider>
   );
 };
 

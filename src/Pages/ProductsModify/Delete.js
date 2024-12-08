@@ -1,15 +1,14 @@
-import React, {useState, useEffect} from 'react'
-import {
-    Button,
-    Dialog,
-    DialogActions,
-    DialogTitle,
-    DialogContent,
-  } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import { Button, Dialog, DialogActions, DialogTitle } from "@mui/material";
 
-const Delete = ({ open, selectedProduct, handleCloseDialogs, handleConfirmDelete }) => {
-  const [productName, setProductName] = useState('');
-  
+const Delete = ({
+  open,
+  selectedProduct,
+  handleCloseDialogs,
+  handleConfirmDelete,
+}) => {
+  const [productName, setProductName] = useState("");
+
   useEffect(() => {
     if (selectedProduct) {
       setProductName(selectedProduct.productName);
@@ -18,19 +17,28 @@ const Delete = ({ open, selectedProduct, handleCloseDialogs, handleConfirmDelete
 
   return (
     <div>
-        <Dialog open={open} onClose={()=> {}}>
-            <DialogTitle>{`Delete ${productName}?`}</DialogTitle>
-            <DialogActions>
-            <Button onClick={handleCloseDialogs} color="primary" sx={{ fontWeight: "600", "&:hover": {color: "gold"} }}>
-                Cancel
-            </Button>
-            <Button onClick={handleConfirmDelete} color="primary" variant="contained" sx={{fontWeight: "600", "&:hover": {color: "gold"}}}>
-                Delete
-            </Button>
-            </DialogActions>
+      <Dialog open={open} onClose={() => {}}>
+        <DialogTitle>{`Delete ${productName}?`}</DialogTitle>
+        <DialogActions>
+          <Button
+            onClick={handleCloseDialogs}
+            color="primary"
+            sx={{ fontWeight: "600", "&:hover": { color: "gold" } }}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={handleConfirmDelete}
+            color="primary"
+            variant="contained"
+            sx={{ fontWeight: "600", "&:hover": { color: "gold" } }}
+          >
+            Delete
+          </Button>
+        </DialogActions>
       </Dialog>
     </div>
-  )
-}
+  );
+};
 
-export default Delete
+export default Delete;

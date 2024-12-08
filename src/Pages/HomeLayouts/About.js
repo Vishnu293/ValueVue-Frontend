@@ -1,4 +1,6 @@
-import { Box, Card, CardContent, CardMedia } from "@mui/material";
+import { Box, Card, CardContent, CardMedia, Typography } from "@mui/material";
+import { ThemeProvider } from "@mui/material/styles";
+import { lightTheme, darkTheme } from "../MyTheme";
 import React from "react";
 import Logo from "../../Assets/logo.png";
 import Navbar from "../HeaderFiles/Navbar";
@@ -7,11 +9,28 @@ import { Category } from "@mui/icons-material";
 const About = () => {
   return (
     <Box>
-      <Navbar />
-      <Category />
-      <>
-        <Card sx={{ backgroundColor: "white", margin: "15px", marginTop: "9vh", padding: '20px' }}>
-        <h1 className="contact-me">About Us</h1>
+      <ThemeProvider theme={lightTheme}>
+        <Navbar />
+        <Category />
+        <Card
+          sx={{
+            height: "85vh",
+            width: "98vw",
+            backgroundColor: "white",
+            padding: "1.5rem",
+            margin: "0 auto",
+            marginTop: "10vh",
+          }}
+        >
+          <Typography
+            variant="h1"
+            sx={{
+              fontSize: "1.5rem",
+              fontWeight: (theme) => theme.typography.fontWeightBold,
+            }}
+          >
+            About Us
+          </Typography>
           <Box
             sx={{
               display: "flex",
@@ -23,10 +42,18 @@ const About = () => {
             <CardMedia>
               <img src={Logo} width={"300px"} />
             </CardMedia>
-            <CardContent>
-              <h1 style={{ fontSize: "25px", textAlign: "center" }}>
-                Welcome to ValueVue
-              </h1>
+            <Typography
+              variant="h1"
+              sx={{
+                fontWeight: "bold",
+                fontSize: "2rem",
+                textAlign: "center",
+                marginTop: "1rem",
+              }}
+            >
+              Welcome to ValueVue
+            </Typography>
+            <Typography>
               <br />
               We understand the pulse of the modern consumer, and ValueVue is
               tailored to meet your contemporary shopping needs with
@@ -64,15 +91,16 @@ const About = () => {
               Bridging the digital gap between consumers and local businesses,
               ValueVue emerges as a comprehensive solution for today's dynamic
               retail landscape.
-              <br /><br />
+              <br />
+              <br />
               Embark on a new era of shopping with ValueVue—where convenience,
               information, and affordability converge for a seamless and
               empowered consumer journey. Join us now on this exciting venture
               and redefine the way you shop!
-            </CardContent>
+            </Typography>
           </Box>
         </Card>
-      </>
+      </ThemeProvider>
     </Box>
   );
 };
