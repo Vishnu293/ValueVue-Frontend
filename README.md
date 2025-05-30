@@ -65,36 +65,36 @@ Here are some key screenshots that show the various features of the app:
 
 ### Signin & Signup Pages
 <div style="display: flex; flex-wrap: wrap; gap: 10px;">
-  <img src="https://i.postimg.cc/bNMJCC0R/12.png" width="350" height="200">
-  <img src="https://i.postimg.cc/13qzLGJ1/13.png" width="350" height="200">
-  <img src="https://i.postimg.cc/jjYjKDFw/14.png" width="350" height="200">
-  <img src="https://i.postimg.cc/hjSPzHgK/15.png" width="350" height="200">
+  <img src="https://res.cloudinary.com/dqdgle0dz/image/upload/v1748542586/12_t0hspy.png" width="350" height="200">
+  <img src="https://res.cloudinary.com/dqdgle0dz/image/upload/v1748542586/13_nn46ei.png" width="350" height="200">
+  <img src="https://res.cloudinary.com/dqdgle0dz/image/upload/v1748542585/14_jvof2i.png" width="350" height="200">
+  <img src="https://res.cloudinary.com/dqdgle0dz/image/upload/v1748542584/15_t70puc.png" width="350" height="200">
 </div>
 
 ### Customer Pages
 <div style="display: flex; flex-wrap: wrap; gap: 10px;">
-  <img src="https://i.postimg.cc/Hx2n6T3J/3.png" width="350" height="200">
-  <img src="https://i.postimg.cc/Kj8zVCs0/4.png" width="350" height="200">
-  <img src="https://i.postimg.cc/zv2B1ps8/5.png" width="350" height="200">
-  <img src="https://i.postimg.cc/bNdrRcnJ/9.png" width="350" height="200">
+  <img src="https://res.cloudinary.com/dqdgle0dz/image/upload/v1748542578/3_ppcjjx.png" width="350" height="200">
+  <img src="https://res.cloudinary.com/dqdgle0dz/image/upload/v1748542578/4_jfthhd.png" width="350" height="200">
+  <img src="https://res.cloudinary.com/dqdgle0dz/image/upload/v1748542578/5_cmmhgy.png" width="350" height="200">
+  <img src="https://res.cloudinary.com/dqdgle0dz/image/upload/v1748542576/9_cxykn2.png" width="350" height="200">
 </div>
 
 ### Seller Pages
 <div style="display: flex; flex-wrap: wrap; gap: 10px;">
-  <img src="https://i.postimg.cc/vB38W3Hf/16.png" width="350" height="200">
-  <img src="https://i.postimg.cc/KY78Ym69/17.png" width="350" height="200">
-  <img src="https://i.postimg.cc/yxx1nck5/18.png" width="350" height="200">
-  <img src="https://i.postimg.cc/gj7Y7jh0/19.png" width="350" height="200">
-  <img src="https://i.postimg.cc/XN17qHP0/20.png" width="350" height="200">
-  <img src="https://i.postimg.cc/9F4X7P3w/21.png" width="350" height="200">
+  <img src="https://res.cloudinary.com/dqdgle0dz/image/upload/v1748542583/16_etxlbf.png" width="350" height="200">
+  <img src="https://res.cloudinary.com/dqdgle0dz/image/upload/v1748542582/17_r5aebw.png" width="350" height="200">
+  <img src="https://res.cloudinary.com/dqdgle0dz/image/upload/v1748542581/18_ansigv.png" width="350" height="200">
+  <img src="https://res.cloudinary.com/dqdgle0dz/image/upload/v1748542580/19_uinkgo.png" width="350" height="200">
+  <img src="https://res.cloudinary.com/dqdgle0dz/image/upload/v1748542579/20_obeae2.png" width="350" height="200">
+  <img src="https://res.cloudinary.com/dqdgle0dz/image/upload/v1748542579/21_g2rs24.png" width="350" height="200">
 </div>
 
 ### Home Page & Footer
 <div style="display: flex; flex-wrap: wrap; gap: 10px;">
-  <img src="https://i.postimg.cc/Hx2n6T3J/3.png" width="350" height="200">
-  <img src="https://i.postimg.cc/RVjSQ39s/22.png" width="350" height="200">
-  <img src="https://i.postimg.cc/QtsVgFgG/7.png" width="350" height="200">
-  <img src="https://i.postimg.cc/L4xhf6nw/8.png" width="350" height="200">
+  <img src="https://res.cloudinary.com/dqdgle0dz/image/upload/v1748542578/3_ppcjjx.png" width="350" height="200">
+  <img src="https://res.cloudinary.com/dqdgle0dz/image/upload/v1748542578/22_dmoyn9.png" width="350" height="200">
+  <img src="https://res.cloudinary.com/dqdgle0dz/image/upload/v1748542576/7_lycnuy.png" width="350" height="200">
+  <img src="https://res.cloudinary.com/dqdgle0dz/image/upload/v1748542576/8_apiuuh.png" width="350" height="200">
 </div>
 
 ---
